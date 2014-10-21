@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+ /** struts-ready-plugin Configurations 
+   * Author: Ready 
+   * Author Blog: http://www.365mini.com
+   * Plugin Site: https://github.com/CodePlayer/struts-ready-plugin
+   * Mail: CodePlayer360@gmail.com
+   */
+ -->
+
+
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts order="30">
+
+	<!-- 允许即使没有@Action注解也创建action映射 -->
+	<constant name="struts.convention.action.mapAllMatches" value="true" />
+	<!-- 允许result页面放置于路径："resultsRoot/namespace/actionName/result.extension" -->
+	<constant name="struts.convention.result.flatLayout" value="false" />
+	<!-- 禁止动态方法调用 -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<!-- URL默认不带任何后缀 -->
+	<constant name="struts.action.extension" value=",," />
+	<!-- 禁止访问struts2自带的静态资源文件 -->
+	<constant name="struts.serve.static" value="false" />
+
+	<!-- 默认继承ready-default包 -->
+	<constant name="struts.convention.default.parent.package" value="ready-default" />
+
+	<!-- 是否启用struts-ready-plugin -->
+	<constant name="struts.enable.ready" value="true" />
+	<!-- 实现形如"namespace/action/method"访问方式的ActionMapper核心实现类 -->
+	<constant name="struts.mapper.class" value="me.ready.struts2.ReadyActionMapper" />
+	<!-- session中存放用户信息的key值 -->
+	<constant name="struts.ready.sessionUserKey" value="user" />
+	<!-- 是否启用权限拦截器 -->
+	<constant name="struts.enable.ready.permission" value="true" />
+	
+	<package name="ready-default" abstract="true" extends="struts-default">
+		<interceptors>
+			<interceptor name="permission" class="me.ready.auth.PermissionInterceptor" />
+			<interceptor-stack name="readyStack">
+				<interceptor-ref name="defaultStack">
+					<param name="exception.logEnabled">true</param>
+					<param name="exception.logLevel">error</param>
+				</interceptor-ref>
+				<interceptor-ref name="permission" />
+			</interceptor-stack>
+		</interceptors>
+		
+		<!-- 默认的拦截器栈 -->
+		<default-interceptor-ref name="readyStack" />
+		
+		<!-- 默认Action类 -->
+		<default-class-ref class="me.ready.struts2.ReadyActionSupport" />
+	</package>
+	
+</struts>
