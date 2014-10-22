@@ -37,7 +37,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		boolean hasAnnotation = action.getClass().isAnnotationPresent(Permission.class);
 		if (hasAnnotation) {
 			Permission p = action.getClass().getAnnotation(Permission.class);
-			allow = isAllowAccess(role, p.value(), proxy.getActionName()) ? 1 : -1;
+			allow = checkPermission(role, p.value(), proxy.getActionName()) ? 1 : -1;
 		}
 		if (allow <= 0 && (!hasAnnotation || role != null)) {
 			String methodName = proxy.getMethod();
@@ -46,7 +46,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
 				Method method = action.getClass().getMethod(methodName);
 				if (method.isAnnotationPresent(Permission.class)) {
 					Permission p = method.getAnnotation(Permission.class);
-					allow = isAllowAccess(role, p.value(), methodName) ? 1 : -1;
+					allow = checkPermission(role, p.value(), methodName) ? 1 : -1;
 				}
 			} catch (NoSuchMethodException e) {
 				// ignore exception
@@ -66,7 +66,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
 	 * @param defaultValue 默认的权限码
 	 * @return
 	 */
-	protected boolean isAllowAccess(UserPermission role, String code, String defaultValue) {
+	protected boolean checkPermission(UserPermission role, String code, String defaultValue) {
 		if (role == null) return false;
 		if (code.length() == 0) code = defaultValue;
 		return role.hasPermission(code);

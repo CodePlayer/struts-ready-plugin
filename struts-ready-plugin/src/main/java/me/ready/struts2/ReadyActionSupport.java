@@ -6,6 +6,13 @@ import java.io.UnsupportedEncodingException;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
+/**
+ * 自定义的ActionSupport类，其它Action均可继承此类以实现某些功能
+ * 
+ * @package me.ready.struts2
+ * @author Ready
+ * @date 2014-10-23
+ */
 @SuppressWarnings("serial")
 public class ReadyActionSupport extends ActionSupport {
 

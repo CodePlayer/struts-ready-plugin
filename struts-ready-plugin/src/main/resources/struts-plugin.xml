@@ -8,14 +8,13 @@
    */
  -->
 
-
 <!DOCTYPE struts PUBLIC
 	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
 	"http://struts.apache.org/dtds/struts-2.3.dtd">
 
 <struts order="30">
 
-	<!-- 允许即使没有@Action注解也创建action映射 -->
+	<!-- 即使没有@Action注解也允许创建action映射 -->
 	<constant name="struts.convention.action.mapAllMatches" value="true" />
 	<!-- 允许result页面放置于路径："resultsRoot/namespace/actionName/result.extension" -->
 	<constant name="struts.convention.result.flatLayout" value="false" />
