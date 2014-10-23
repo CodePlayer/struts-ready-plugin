@@ -21,8 +21,13 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 public class ReadyActionMapper extends DefaultActionMapper {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReadyActionMapper.class);
-	@Inject("struts.enable.ready")
+	/** 是否启用struts-ready-plugin插件 */
 	protected boolean readyEnabled;
+
+	@Inject("struts.ready.enable")
+	public void setReadyEnabled(String enabled) {
+		this.readyEnabled = "true".equalsIgnoreCase(enabled);
+	}
 
 	@Override
 	public ActionMapping getMapping(HttpServletRequest request, ConfigurationManager configManager) {

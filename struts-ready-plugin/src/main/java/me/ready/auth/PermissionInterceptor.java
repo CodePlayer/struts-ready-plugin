@@ -19,11 +19,19 @@ public class PermissionInterceptor extends AbstractInterceptor {
 
 	private static final long serialVersionUID = -8700565515654350711L;
 	/** 存储用户信息的session key */
-	@Inject("struts.ready.sessionUserKey")
 	protected String sessionUserKey; // 存储用户信息的session key
 	/** 是否启用权限控制 */
-	@Inject("struts.enable.ready.permission")
 	protected boolean readyPermissionEnabled;
+
+	@Inject("struts.ready.sessionUserKey")
+	public void setSessionUserKey(String sessionUserKey) {
+		this.sessionUserKey = sessionUserKey;
+	}
+
+	@Inject("struts.ready.enable.permission")
+	public void setReadyPermissionEnabled(String enabled) {
+		this.readyPermissionEnabled = "true".equalsIgnoreCase(enabled);
+	}
 
 	public String intercept(ActionInvocation invocation) throws Exception {
 		if (!readyPermissionEnabled) {

@@ -29,13 +29,13 @@
 	<constant name="struts.convention.default.parent.package" value="ready-default" />
 
 	<!-- 是否启用struts-ready-plugin -->
-	<constant name="struts.enable.ready" value="true" />
+	<constant name="struts.ready.enable" value="true" />
 	<!-- 实现形如"namespace/action/method"访问方式的ActionMapper核心实现类 -->
 	<constant name="struts.mapper.class" value="me.ready.struts2.ReadyActionMapper" />
 	<!-- session中存放用户信息的key值 -->
 	<constant name="struts.ready.sessionUserKey" value="user" />
 	<!-- 是否启用权限拦截器 -->
-	<constant name="struts.enable.ready.permission" value="true" />
+	<constant name="struts.ready.enable.permission" value="true" />
 	
 	<package name="ready-default" abstract="true" extends="struts-default">
 		<interceptors>
