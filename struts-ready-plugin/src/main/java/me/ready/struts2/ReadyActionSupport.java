@@ -1,7 +1,7 @@
 package me.ready.struts2;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -26,11 +26,7 @@ public class ReadyActionSupport extends ActionSupport {
 	protected String _download(InputStream inputStream, String fileName) {
 		ActionContext ctx = ActionContext.getContext();
 		ctx.put("__is", inputStream);
-		try {
-			ctx.put("__file", new String(fileName.getBytes("UTF-8"), "ISO-8859-1"));
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+		ctx.put("__file", new String(fileName.getBytes(Charset.forName("UTF-8")), Charset.forName("ISO-8859-1")));
 		return "global_download";
 	}
 
@@ -50,23 +46,22 @@ public class ReadyActionSupport extends ActionSupport {
 	 * 重定向到指定的URL
 	 * 
 	 * @param url 指定的URL
+	 * @param permanent 是否是永久重定向(响应状态码：301)
 	 * @return
 	 */
-	protected String _redirect(String url) {
+	protected String _redirect(String url, boolean permanent) {
 		ActionContext ctx = ActionContext.getContext();
 		ctx.put("__url", url);
-		return "global_redirect";
+		return permanent ? "global_predirect" : "global_redirect";
 	}
 
 	/**
-	 * 永久重定向到指定的URL
+	 * 临时重定向到指定的URL
 	 * 
 	 * @param url 指定的URL
 	 * @return
 	 */
-	protected String _permanentRedirect(String url) {
-		ActionContext ctx = ActionContext.getContext();
-		ctx.put("__url", url);
-		return "global_predirect";
+	protected String _redirect(String url) {
+		return _redirect(url, false);
 	}
 }
