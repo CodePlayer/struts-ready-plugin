@@ -19,8 +19,8 @@ public class ReadyActionSupport extends ActionSupport {
 	/**
 	 * 快速进行文件下载
 	 * 
-	 * @param inputStream
-	 * @param fileName
+	 * @param inputStream 指定的用于下载的文件输入流
+	 * @param fileName 指定响应到客户浏览器的下载文件名称
 	 * @return
 	 */
 	protected String _download(InputStream inputStream, String fileName) {
