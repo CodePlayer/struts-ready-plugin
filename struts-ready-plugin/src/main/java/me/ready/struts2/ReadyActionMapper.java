@@ -1,12 +1,16 @@
 package me.ready.struts2;
 
+import java.util.Collection;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.RequestUtils;
 import org.apache.struts2.dispatcher.mapper.ActionMapping;
 import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
 
+import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.ConfigurationManager;
+import com.opensymphony.xwork2.config.entities.PackageConfig;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.util.logging.Logger;
 import com.opensymphony.xwork2.util.logging.LoggerFactory;
@@ -23,10 +27,36 @@ public class ReadyActionMapper extends DefaultActionMapper {
 	private static final Logger LOG = LoggerFactory.getLogger(ReadyActionMapper.class);
 	/** 是否启用struts-ready-plugin插件 */
 	protected boolean readyEnabled;
+	/** 默认的action名称 */
+	protected String defaultAction;
+	/** 默认的method名称 */
+	protected String defaultMethod;
+	/** 是否启用默认的action和名称 */
+	protected boolean defaultEnabled;
 
 	@Inject("struts.ready.enable")
 	public void setReadyEnabled(String enabled) {
 		this.readyEnabled = "true".equalsIgnoreCase(enabled);
+		if (this.readyEnabled) {
+			LOG.debug("已启用struts-ready-plugin");
+		}
+	}
+
+	@Inject("struts.ready.default.action")
+	public void setDefaultAction(String defaultAction) {
+		LOG.debug("默认的action为[#0]", defaultAction);
+		this.defaultAction = defaultAction;
+	}
+
+	@Inject("struts.ready.default.method")
+	public void setDefaultMethod(String defaultMethod) {
+		LOG.debug("默认的method为[#0]", defaultMethod);
+		this.defaultMethod = defaultMethod;
+	}
+
+	@Inject("struts.ready.enable.default")
+	public void setDefaultEnabled(String enabled) {
+		this.defaultEnabled = "true".equalsIgnoreCase(enabled);
 	}
 
 	@Override
@@ -46,6 +76,7 @@ public class ReadyActionMapper extends DefaultActionMapper {
 			return null;
 		}
 		parseNameAndNamespaceAndMethod(uri, mapping, configManager);
+		System.out.println("解析数据：namespace[" + mapping.getNamespace() + "], action[" + mapping.getName() + "], method[" + mapping.getMethod() + "]");
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("解析数据：namespace[" + mapping.getNamespace() + "], action[" + mapping.getName() + "], method[" + mapping.getMethod() + "]");
 		}
@@ -57,19 +88,42 @@ public class ReadyActionMapper extends DefaultActionMapper {
 	}
 
 	/**
-	 * Parses the name and namespace from the uri
+	 * 从URI中解析action的名称、命名空间以及方法名称
 	 * 
-	 * @param uri The uri
-	 * @param mapping The action mapping to populate
+	 * @param uri 指定的URI
+	 * @param mapping 用于组装的ActionMapping
 	 */
 	protected void parseNameAndNamespaceAndMethod(String uri, ActionMapping mapping, ConfigurationManager configManager) {
-		String namespace = "", name, method;
+		String namespace = null, name = null, method = null;
 		int lastSlash = uri.lastIndexOf('/');
-		if (lastSlash > 0) {
-			method = uri.substring(lastSlash + 1);
+		if (defaultEnabled && mapping.getExtension() == null && lastSlash + 1 == uri.length()) {
 			uri = uri.substring(0, lastSlash);
+			Configuration config = configManager.getConfiguration();
+			Collection<PackageConfig> packages = config.getPackageConfigs().values();
+			PackageConfig pack = getPackageByNamespace(packages, uri);
+			if (pack != null && pack.getActionConfigs().get(defaultAction) != null) {
+				mapping.setNamespace(uri);
+				mapping.setName(defaultAction);
+				mapping.setMethod(defaultMethod);
+				return;
+			}
+			lastSlash = uri.lastIndexOf('/');
+			if (lastSlash != -1) {
+				namespace = uri.substring(0, lastSlash);
+				if (getPackageByNamespace(packages, namespace) != null) {
+					mapping.setName(uri.substring(lastSlash + 1));
+					mapping.setNamespace(namespace);
+					mapping.setMethod(defaultMethod);
+				}
+			}
+		} else if (lastSlash > 0) {
+			if (method == null) {
+				method = uri.substring(lastSlash + 1);
+				uri = uri.substring(0, lastSlash);
+			}
 			lastSlash = uri.lastIndexOf('/');
 			if (lastSlash == -1) {
+				namespace = "";
 				name = uri;
 			} else if (lastSlash == 0) {
 				namespace = "/";
@@ -79,7 +133,7 @@ public class ReadyActionMapper extends DefaultActionMapper {
 				name = uri.substring(lastSlash + 1);
 			}
 			mapping.setNamespace(namespace);
-			mapping.setName(cleanupActionName(name));
+			mapping.setName(name);
 			mapping.setMethod(method);
 		}
 	}
@@ -101,5 +155,21 @@ public class ReadyActionMapper extends DefaultActionMapper {
 		handleExtension(mapping, uri);
 		handleParams(mapping, uri);
 		return uri.toString();
+	}
+
+	/**
+	 * 根据指定的命名空间来获取包配置信息
+	 * 
+	 * @param packages 指定包配置集合
+	 * @param namespace 指定的命名空间
+	 * @return
+	 */
+	public static final PackageConfig getPackageByNamespace(Collection<PackageConfig> packages, String namespace) {
+		for (PackageConfig cfg : packages) {
+			if (namespace.equals(cfg.getNamespace())) {
+				return cfg;
+			}
+		}
+		return null;
 	}
 }

@@ -21,21 +21,28 @@
 	<!-- 禁止动态方法调用 -->
 	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
 	<!-- URL默认不带任何后缀 -->
-	<constant name="struts.action.extension" value=",," />
+	<constant name="struts.action.extension" value="," />
 	<!-- 禁止访问struts2自带的静态资源文件 -->
 	<constant name="struts.serve.static" value="false" />
 
 	<!-- 默认继承ready-default包 -->
 	<constant name="struts.convention.default.parent.package" value="ready-default" />
 
-	<!-- 是否启用struts-ready-plugin -->
-	<constant name="struts.ready.enable" value="true" />
 	<!-- 实现形如"namespace/action/method"访问方式的ActionMapper核心实现类 -->
 	<constant name="struts.mapper.class" value="me.ready.struts2.ReadyActionMapper" />
+	<!-- 是否启用struts-ready-plugin -->
+	<constant name="struts.ready.enable" value="true" />
+	<!-- 默认的action名称 -->
+	<constant name="struts.ready.default.action" value="default" />
+	<!-- 默认的method名称 -->
+	<constant name="struts.ready.default.method" value="index" />
 	<!-- session中存放用户信息的key值 -->
 	<constant name="struts.ready.sessionUserKey" value="user" />
 	<!-- 是否启用权限拦截器 -->
 	<constant name="struts.ready.enable.permission" value="true" />
+	
+	<!-- 是否启用默认的action和method -->
+	<constant name="struts.ready.enable.default" value="true" />
 	
 	<package name="ready-default" abstract="true" extends="struts-default">
 		<interceptors>
