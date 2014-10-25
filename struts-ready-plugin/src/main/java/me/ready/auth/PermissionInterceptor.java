@@ -42,18 +42,17 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		ActionProxy proxy = invocation.getProxy();
 		Object action = proxy.getAction();
 		int allow = 0;
-		boolean hasAnnotation = action.getClass().isAnnotationPresent(Permission.class);
-		if (hasAnnotation) {
-			Permission p = action.getClass().getAnnotation(Permission.class);
+		Permission p = action.getClass().getAnnotation(Permission.class);
+		if (p != null) {
 			allow = checkPermission(role, p.value(), proxy.getActionName()) ? 1 : -1;
 		}
-		if (allow <= 0 && (!hasAnnotation || role != null)) {
+		if (allow <= 0 && (p == null || role != null)) {
 			String methodName = proxy.getMethod();
 			if (methodName == null) methodName = "execute";
 			try {
 				Method method = action.getClass().getMethod(methodName);
-				if (method.isAnnotationPresent(Permission.class)) {
-					Permission p = method.getAnnotation(Permission.class);
+				p = method.getAnnotation(Permission.class);
+				if (p != null) {
 					allow = checkPermission(role, p.value(), methodName) ? 1 : -1;
 				}
 			} catch (NoSuchMethodException e) {

@@ -76,9 +76,8 @@ public class ReadyActionMapper extends DefaultActionMapper {
 			return null;
 		}
 		parseNameAndNamespaceAndMethod(uri, mapping, configManager);
-		System.out.println("解析数据：namespace[" + mapping.getNamespace() + "], action[" + mapping.getName() + "], method[" + mapping.getMethod() + "]");
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("解析数据：namespace[" + mapping.getNamespace() + "], action[" + mapping.getName() + "], method[" + mapping.getMethod() + "]");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("解析数据：namespace[" + mapping.getNamespace() + "], action[" + mapping.getName() + "], method[" + mapping.getMethod() + "]");
 		}
 		handleSpecialParameters(request, mapping);
 		if (mapping.getName() == null) {

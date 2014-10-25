@@ -46,8 +46,10 @@
 	
 	<package name="ready-default" abstract="true" extends="struts-default">
 		<interceptors>
+			<interceptor name="ready" class="me.ready.struts2.ReadyInterceptor" />
 			<interceptor name="permission" class="me.ready.auth.PermissionInterceptor" />
 			<interceptor-stack name="readyStack">
+				<interceptor-ref name="ready" />
 				<interceptor-ref name="defaultStack">
 					<param name="exception.logEnabled">true</param>
 					<param name="exception.logLevel">error</param>
