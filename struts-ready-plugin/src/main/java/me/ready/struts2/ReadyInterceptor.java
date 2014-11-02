@@ -4,15 +4,16 @@ import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletResponse;
 
+import me.ready.annotation.Ready;
+
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.convention.annotation.Action;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 
 /**
- * struts-ready-plugin的核心拦截器，action的对应方法必须具有@Action注解
+ * struts-ready-plugin的核心拦截器，action的对应方法必须具有@Ready注解
  * 
  * @package me.ready.struts2
  * @author Ready
@@ -33,7 +34,7 @@ public class ReadyInterceptor implements Interceptor {
 		boolean notFound = false;
 		try {
 			Method method = action.getClass().getMethod(methodName);
-			notFound = method == null || method.getAnnotation(Action.class) == null;
+			notFound = method == null || method.getAnnotation(Ready.class) == null;
 		} catch (NoSuchMethodException e) {
 			notFound = true;
 		}

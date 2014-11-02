@@ -2,6 +2,8 @@ package me.ready.auth;
 
 import java.lang.reflect.Method;
 
+import me.ready.annotation.Permission;
+
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
