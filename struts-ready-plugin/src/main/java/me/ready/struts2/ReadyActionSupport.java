@@ -1,7 +1,17 @@
 package me.ready.struts2;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+
+import javax.servlet.http.HttpServletResponse;
+
+import me.ready.util.JSONUtil;
+
+import org.apache.struts2.ServletActionContext;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -20,14 +30,40 @@ public class ReadyActionSupport extends ActionSupport {
 	 * 快速进行文件下载
 	 * 
 	 * @param inputStream 指定的用于下载的文件输入流
-	 * @param fileName 指定响应到客户浏览器的下载文件名称
+	 * @param downloadFileName 指定响应到客户浏览器的下载文件名称
 	 * @return
 	 */
-	protected String _download(InputStream inputStream, String fileName) {
+	protected String _download(InputStream inputStream, String downloadFileName) {
 		ActionContext ctx = ActionContext.getContext();
 		ctx.put("__is", inputStream);
-		ctx.put("__file", new String(fileName.getBytes(Charset.forName("UTF-8")), Charset.forName("ISO-8859-1")));
+		ctx.put("__file", new String(downloadFileName.getBytes(Charset.forName("UTF-8")), Charset.forName("ISO-8859-1")));
 		return "global_download";
+	}
+
+	/**
+	 * 快速进行文件下载
+	 * 
+	 * @param inputStream 指定的用于下载的文件输入流
+	 * @param downloadFileName 指定响应到客户浏览器的下载文件名称
+	 * @return
+	 */
+	protected String _download(File file, String downloadFileName) {
+		try {
+			return _download(new FileInputStream(file), downloadFileName);
+		} catch (FileNotFoundException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	/**
+	 * 快速进行文件下载
+	 * 
+	 * @param inputStream 指定的用于下载的文件输入流
+	 * @param downloadFileName 指定响应到客户浏览器的下载文件名称
+	 * @return
+	 */
+	protected String _download(String filepath, String downloadFileName) {
+		return _download(new File(filepath), downloadFileName);
 	}
 
 	/**
@@ -63,5 +99,32 @@ public class ReadyActionSupport extends ActionSupport {
 	 */
 	protected String _redirect(String url) {
 		return _redirect(url, false);
+	}
+
+	/**
+	 * 将指定文本内容写入响应流中
+	 * 
+	 * @param text 需要写入的文本内容
+	 * @param encoding 指定的字符集编码。如果为null，则默认为"UTF-8"
+	 */
+	protected void writeToResponse(String text, String encoding) {
+		HttpServletResponse response = ServletActionContext.getResponse();
+		response.setContentType(encoding == null ? "text/html;charset=UTF-8" : "text/html;charset=" + encoding);
+		try {
+			response.getWriter().write(text);
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	/**
+	 * 将指定对象转为JSON字符串，并写入到响应流中
+	 * 
+	 * @param object 指定的对象
+	 */
+	protected void writeJSON(Object object) {
+		if (object != null) {
+			writeToResponse(JSONUtil.encode(object), null);
+		}
 	}
 }

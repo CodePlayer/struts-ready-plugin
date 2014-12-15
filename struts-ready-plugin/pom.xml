@@ -36,6 +36,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>me.ready</groupId>
+			<artifactId>ready-x</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
