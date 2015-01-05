@@ -10,8 +10,6 @@ import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
 
 import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.ConfigurationManager;
-import com.opensymphony.xwork2.config.RuntimeConfiguration;
-import com.opensymphony.xwork2.config.entities.ActionConfig;
 import com.opensymphony.xwork2.config.entities.PackageConfig;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.util.logging.Logger;
@@ -100,26 +98,11 @@ public class ReadyActionMapper extends DefaultActionMapper {
 		if (defaultEnabled && mapping.getExtension() == null && lastSlash + 1 == uri.length()) {
 			uri = uri.substring(0, lastSlash);
 			Configuration config = configManager.getConfiguration();
-			RuntimeConfiguration runtimeConfiguration = config.getRuntimeConfiguration();
-			ActionConfig ac = runtimeConfiguration.getActionConfig(uri, defaultAction);
-			if (ac != null) {
-				mapping.setNamespace(uri);
-				mapping.setName(defaultAction);
-				mapping.setMethod(defaultMethod);
-				return;
-			}
-			lastSlash = uri.lastIndexOf('/');
-			if (lastSlash != -1) {
-				namespace = uri.substring(0, lastSlash);
-				name = uri.substring(lastSlash + 1);
-				ac = runtimeConfiguration.getActionConfig(namespace, name);
-				if (ac != null) {
-					mapping.setNamespace(namespace);
-					mapping.setName(name);
-					mapping.setMethod(defaultMethod);
-				}
-			}
-			//	parseDefault(uri, mapping, config);
+			/*
+			 * RuntimeConfiguration runtimeConfiguration = config.getRuntimeConfiguration(); ActionConfig ac = runtimeConfiguration.getActionConfig(uri, defaultAction); if (ac != null) { mapping.setNamespace(uri); mapping.setName(defaultAction); mapping.setMethod(defaultMethod); return; } lastSlash = uri.lastIndexOf('/'); if (lastSlash != -1) { namespace = uri.substring(0, lastSlash); name =
+			 * uri.substring(lastSlash + 1); ac = runtimeConfiguration.getActionConfig(namespace, name); if (ac != null) { mapping.setNamespace(namespace); mapping.setName(name); mapping.setMethod(defaultMethod); } }
+			 */
+			parseDefault(uri, mapping, config);
 		} else if (lastSlash > 0) {
 			if (method == null) {
 				method = uri.substring(lastSlash + 1);
