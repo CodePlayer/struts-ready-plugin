@@ -108,6 +108,7 @@ public class ReadyActionSupport extends ActionSupport {
 	 * @param encoding 指定的字符集编码。如果为null，则默认为"UTF-8"
 	 */
 	protected void writeToResponse(String text, String encoding) {
+		ActionContext.getContext().getActionInvocation().getProxy().setExecuteResult(false);
 		HttpServletResponse response = ServletActionContext.getResponse();
 		response.setContentType(encoding == null ? "text/html;charset=UTF-8" : "text/html;charset=" + encoding);
 		try {
@@ -115,6 +116,15 @@ public class ReadyActionSupport extends ActionSupport {
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
+	}
+
+	/**
+	 * 将指定文本内容写入响应流中，并设置字符集编码为UTF-8
+	 * 
+	 * @param text 需要写入的文本内容
+	 */
+	protected void writeToResponse(String text) {
+		writeToResponse(text, null);
 	}
 
 	/**

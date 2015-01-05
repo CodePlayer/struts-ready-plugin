@@ -10,6 +10,8 @@ import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
 
 import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.ConfigurationManager;
+import com.opensymphony.xwork2.config.RuntimeConfiguration;
+import com.opensymphony.xwork2.config.entities.ActionConfig;
 import com.opensymphony.xwork2.config.entities.PackageConfig;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.util.logging.Logger;
@@ -98,9 +100,9 @@ public class ReadyActionMapper extends DefaultActionMapper {
 		if (defaultEnabled && mapping.getExtension() == null && lastSlash + 1 == uri.length()) {
 			uri = uri.substring(0, lastSlash);
 			Configuration config = configManager.getConfiguration();
-			Collection<PackageConfig> packages = config.getPackageConfigs().values();
-			PackageConfig pack = getPackageByNamespace(packages, uri);
-			if (pack != null && pack.getActionConfigs().get(defaultAction) != null) {
+			RuntimeConfiguration runtimeConfiguration = config.getRuntimeConfiguration();
+			ActionConfig ac = runtimeConfiguration.getActionConfig(uri, defaultAction);
+			if (ac != null) {
 				mapping.setNamespace(uri);
 				mapping.setName(defaultAction);
 				mapping.setMethod(defaultMethod);
@@ -109,12 +111,15 @@ public class ReadyActionMapper extends DefaultActionMapper {
 			lastSlash = uri.lastIndexOf('/');
 			if (lastSlash != -1) {
 				namespace = uri.substring(0, lastSlash);
-				if (getPackageByNamespace(packages, namespace) != null) {
-					mapping.setName(uri.substring(lastSlash + 1));
+				name = uri.substring(lastSlash + 1);
+				ac = runtimeConfiguration.getActionConfig(namespace, name);
+				if (ac != null) {
 					mapping.setNamespace(namespace);
+					mapping.setName(name);
 					mapping.setMethod(defaultMethod);
 				}
 			}
+			//	parseDefault(uri, mapping, config);
 		} else if (lastSlash > 0) {
 			if (method == null) {
 				method = uri.substring(lastSlash + 1);
@@ -134,6 +139,33 @@ public class ReadyActionMapper extends DefaultActionMapper {
 			mapping.setNamespace(namespace);
 			mapping.setName(name);
 			mapping.setMethod(method);
+		}
+	}
+
+	/**
+	 * 解析默认的Action和Method的名称
+	 * 
+	 * @param uri
+	 * @param mapping
+	 * @param config
+	 */
+	protected void parseDefault(String uri, ActionMapping mapping, Configuration config) {
+		Collection<PackageConfig> packages = config.getPackageConfigs().values();
+		PackageConfig pack = getPackageByNamespace(packages, uri);
+		if (pack != null && pack.getActionConfigs().get(defaultAction) != null) {
+			mapping.setNamespace(uri);
+			mapping.setName(defaultAction);
+			mapping.setMethod(defaultMethod);
+			return;
+		}
+		int lastSlash = uri.lastIndexOf('/');
+		if (lastSlash != -1) {
+			String namespace = uri.substring(0, lastSlash);
+			if (getPackageByNamespace(packages, namespace) != null) {
+				mapping.setName(uri.substring(lastSlash + 1));
+				mapping.setNamespace(namespace);
+				mapping.setMethod(defaultMethod);
+			}
 		}
 	}
 
@@ -164,9 +196,19 @@ public class ReadyActionMapper extends DefaultActionMapper {
 	 * @return
 	 */
 	public static final PackageConfig getPackageByNamespace(Collection<PackageConfig> packages, String namespace) {
-		for (PackageConfig cfg : packages) {
-			if (namespace.equals(cfg.getNamespace())) {
-				return cfg;
+		if (namespace.isEmpty()) {
+			PackageConfig config = null;
+			for (PackageConfig cfg : packages) {
+				if (namespace.equals(cfg.getNamespace())) {
+					config = cfg;
+				}
+			}
+			return config;
+		} else {
+			for (PackageConfig cfg : packages) {
+				if (namespace.equals(cfg.getNamespace())) {
+					return cfg;
+				}
 			}
 		}
 		return null;
