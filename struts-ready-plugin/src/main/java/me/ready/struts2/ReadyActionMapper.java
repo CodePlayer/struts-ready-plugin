@@ -179,10 +179,10 @@ public class ReadyActionMapper extends DefaultActionMapper {
 	 * @return
 	 */
 	public static final PackageConfig getPackageByNamespace(Collection<PackageConfig> packages, String namespace) {
-		if (namespace.isEmpty()) {
+		if (namespace.length() == 0) {
 			PackageConfig config = null;
 			for (PackageConfig cfg : packages) {
-				if (namespace.equals(cfg.getNamespace())) {
+				if (cfg.getNamespace().length() == 0) {
 					config = cfg;
 				}
 			}
