@@ -119,6 +119,9 @@ public class ReadyActionMapper extends DefaultActionMapper {
 				namespace = uri.substring(0, lastSlash);
 				name = uri.substring(lastSlash + 1);
 			}
+			if (namespace.length() > 1 && getPackageByNamespace(configManager.getConfiguration().getPackageConfigs().values(), namespace) == null) {
+				return;
+			}
 			mapping.setNamespace(namespace);
 			mapping.setName(name);
 			mapping.setMethod(method);

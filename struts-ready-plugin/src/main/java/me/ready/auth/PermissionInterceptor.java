@@ -50,7 +50,8 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		}
 		if (allow <= 0 && (p == null || role != null)) {
 			String methodName = proxy.getMethod();
-			if (methodName == null) methodName = "execute";
+			if (methodName == null)
+				methodName = "execute";
 			try {
 				Method method = action.getClass().getMethod(methodName);
 				p = method.getAnnotation(Permission.class);
@@ -76,8 +77,10 @@ public class PermissionInterceptor extends AbstractInterceptor {
 	 * @return
 	 */
 	protected boolean checkPermission(UserPermission role, String code, String defaultValue) {
-		if (role == null) return false;
-		if (code.length() == 0) code = defaultValue;
+		if (role == null)
+			return false;
+		if (code.length() == 0)
+			code = defaultValue;
 		return role.hasPermission(code);
 	}
 }
