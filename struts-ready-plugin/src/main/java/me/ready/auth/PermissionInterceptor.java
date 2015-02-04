@@ -3,6 +3,7 @@ package me.ready.auth;
 import java.lang.reflect.Method;
 
 import me.ready.annotation.Permission;
+import me.ready.util.StringUtil;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -24,6 +25,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
 	protected String sessionUserKey; // 存储用户信息的session key
 	/** 是否启用权限控制 */
 	protected boolean readyPermissionEnabled;
+	protected PermissionPolicy permissionPolicy;
 
 	@Inject("struts.ready.sessionUserKey")
 	public void setSessionUserKey(String sessionUserKey) {
@@ -33,6 +35,12 @@ public class PermissionInterceptor extends AbstractInterceptor {
 	@Inject("struts.ready.enable.permission")
 	public void setReadyPermissionEnabled(String enabled) {
 		this.readyPermissionEnabled = "true".equalsIgnoreCase(enabled);
+	}
+
+	@Inject("permissionPolicy")
+	public void setPermissionPolicy(PermissionPolicy permissionPolicy) {
+		this.permissionPolicy = permissionPolicy;
+		System.out.println(this.permissionPolicy);
 	}
 
 	public String intercept(ActionInvocation invocation) throws Exception {
@@ -46,7 +54,11 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		int allow = 0;
 		Permission p = action.getClass().getAnnotation(Permission.class);
 		if (p != null) {
-			allow = checkPermission(role, p.value(), proxy.getActionName()) ? 1 : -1;
+			String permissionCode = p.value();
+			if (StringUtil.isEmpty(permissionCode)) {
+				permissionCode = permissionPolicy.getCodeFromClass(invocation, action.getClass());
+			}
+			allow = checkPermission(role, permissionCode) ? 1 : -1;
 		}
 		if (allow <= 0 && (p == null || role != null)) {
 			String methodName = proxy.getMethod();
@@ -56,7 +68,12 @@ public class PermissionInterceptor extends AbstractInterceptor {
 				Method method = action.getClass().getMethod(methodName);
 				p = method.getAnnotation(Permission.class);
 				if (p != null) {
-					allow = checkPermission(role, p.value(), methodName) ? 1 : -1;
+					String permissionCode = p.value();
+					if (StringUtil.isEmpty(permissionCode)) {
+						permissionCode = permissionPolicy.getCodeFromMethod(invocation, method);
+					}
+					System.out.println(permissionCode);
+					allow = checkPermission(role, permissionCode) ? 1 : -1;
 				}
 			} catch (NoSuchMethodException e) {
 				// ignore exception
@@ -76,11 +93,9 @@ public class PermissionInterceptor extends AbstractInterceptor {
 	 * @param defaultValue 默认的权限码
 	 * @return
 	 */
-	protected boolean checkPermission(UserPermission role, String code, String defaultValue) {
+	protected boolean checkPermission(UserPermission role, String code) {
 		if (role == null)
 			return false;
-		if (code.length() == 0)
-			code = defaultValue;
 		return role.hasPermission(code);
 	}
 }

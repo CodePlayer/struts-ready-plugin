@@ -14,6 +14,9 @@
 
 <struts order="30">
 
+	<!-- 权限拦截相关策略配置类 -->
+	<bean name="permissionPolicy" class="me.ready.auth.DefaultPermissionPolicy" type="me.ready.auth.PermissionPolicy" />
+	
 	<!-- 即使没有@Action注解也允许创建action映射 -->
 	<constant name="struts.convention.action.mapAllMatches" value="true" />
 	<!-- 允许result页面放置于路径："resultsRoot/namespace/actionName/result.extension" -->

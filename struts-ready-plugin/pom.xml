@@ -3,7 +3,7 @@
 
 	<groupId>me.ready</groupId>
 	<artifactId>struts-ready-plugin</artifactId>
-	<version>0.2.2-SNAPSHOT</version>
+	<version>0.2.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>struts-ready-plugin</name>
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>me.ready</groupId>
 			<artifactId>ready-x</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.2.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
