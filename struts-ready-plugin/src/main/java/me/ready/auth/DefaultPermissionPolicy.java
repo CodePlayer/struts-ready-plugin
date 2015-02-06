@@ -44,8 +44,8 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 	public String getCodeFromMethod(ActionInvocation actionInvocation, Method method) {
 		Menus menus = method.getAnnotation(Menus.class);
 		if (menus != null && menus.value().length > 1) {
-			Menu[] menuArray = menus.value();
 			HttpServletRequest request = ServletActionContext.getRequest();
+			Menu[] menuArray = menus.value();
 			int menuIndex = -1;
 			for (int i = 0; i < menuArray.length; i++) {
 				Menu menu = menuArray[i];
@@ -79,11 +79,17 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 				}
 			}
 			if (menuIndex != -1) {
+				request.setAttribute("__title", menuArray[menuIndex].name());
 				return method.getDeclaringClass().getName().substring(baseIndex) + '.' + method.getName() + '-' + menuIndex;
 			} else {
 				return "unknown";
 			}
 		} else {
+			Menu menu = method.getAnnotation(Menu.class);
+			if (menu != null) {
+				HttpServletRequest request = ServletActionContext.getRequest();
+				request.setAttribute("__title", menu.name());
+			}
 			return method.getDeclaringClass().getName().substring(baseIndex) + '.' + method.getName();
 		}
 	}
