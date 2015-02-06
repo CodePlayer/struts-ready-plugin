@@ -40,7 +40,6 @@ public class PermissionInterceptor extends AbstractInterceptor {
 	@Inject("permissionPolicy")
 	public void setPermissionPolicy(PermissionPolicy permissionPolicy) {
 		this.permissionPolicy = permissionPolicy;
-		System.out.println(this.permissionPolicy);
 	}
 
 	public String intercept(ActionInvocation invocation) throws Exception {
@@ -48,13 +47,15 @@ public class PermissionInterceptor extends AbstractInterceptor {
 			return invocation.invoke();
 		}
 		// ServletActionContext.getRequest().getSession().getAttribute(sessionUserKey);
-		UserPermission role = (UserPermission) ActionContext.getContext().getSession().get(sessionUserKey);
+		ActionContext context = ActionContext.getContext();
+		UserPermission role = (UserPermission) context.getSession().get(sessionUserKey);
 		ActionProxy proxy = invocation.getProxy();
 		Object action = proxy.getAction();
 		int allow = 0;
+		String permissionCode = null;
 		Permission p = action.getClass().getAnnotation(Permission.class);
 		if (p != null) {
-			String permissionCode = p.value();
+			permissionCode = p.value();
 			if (StringUtil.isEmpty(permissionCode)) {
 				permissionCode = permissionPolicy.getCodeFromClass(invocation, action.getClass());
 			}
@@ -68,11 +69,10 @@ public class PermissionInterceptor extends AbstractInterceptor {
 				Method method = action.getClass().getMethod(methodName);
 				p = method.getAnnotation(Permission.class);
 				if (p != null) {
-					String permissionCode = p.value();
+					permissionCode = p.value();
 					if (StringUtil.isEmpty(permissionCode)) {
 						permissionCode = permissionPolicy.getCodeFromMethod(invocation, method);
 					}
-					System.out.println(permissionCode);
 					allow = checkPermission(role, permissionCode) ? 1 : -1;
 				}
 			} catch (NoSuchMethodException e) {
@@ -82,6 +82,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		if (allow < 0) {
 			throw new PermissionException("你没有权限进行此操作!");
 		}
+		context.put("permissionCode", permissionCode);
 		return invocation.invoke();
 	}
 
