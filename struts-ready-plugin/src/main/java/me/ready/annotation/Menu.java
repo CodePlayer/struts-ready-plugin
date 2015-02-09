@@ -17,6 +17,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Menu {
 
+	int DEFAULT_ORDER = -1;
+
 	/**
 	 * 菜单名称
 	 */
@@ -30,5 +32,5 @@ public @interface Menu {
 	/**
 	 * 菜单顺序
 	 */
-	int order() default 0;
+	int order() default DEFAULT_ORDER;
 }

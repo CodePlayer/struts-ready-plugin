@@ -53,11 +53,12 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		Object action = proxy.getAction();
 		int allow = 0;
 		String permissionCode = null;
-		Permission p = action.getClass().getAnnotation(Permission.class);
+		Class<?> clazz = action.getClass();
+		Permission p = clazz.getAnnotation(Permission.class);
 		if (p != null) {
 			permissionCode = p.value();
 			if (StringUtil.isEmpty(permissionCode)) {
-				permissionCode = permissionPolicy.getCodeFromClass(invocation, action.getClass());
+				permissionCode = permissionPolicy.getCodeFromClass(invocation, clazz);
 			}
 			allow = checkPermission(role, permissionCode) ? 1 : -1;
 		}
@@ -66,7 +67,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
 			if (methodName == null)
 				methodName = "execute";
 			try {
-				Method method = action.getClass().getMethod(methodName);
+				Method method = clazz.getMethod(methodName);
 				p = method.getAnnotation(Permission.class);
 				if (p != null) {
 					permissionCode = p.value();
