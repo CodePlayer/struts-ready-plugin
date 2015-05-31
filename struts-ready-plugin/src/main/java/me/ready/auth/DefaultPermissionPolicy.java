@@ -42,8 +42,8 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 	}
 
 	public String getCodeFromMethod(ActionInvocation actionInvocation, Method method) {
-		String permissionCode = null;
 		Menus menus = method.getAnnotation(Menus.class);
+		StringBuilder permissionCode = new StringBuilder(method.getDeclaringClass().getName().substring(baseIndex)).append('.').append(method.getName());
 		if (menus != null && menus.value().length > 1) {
 			// 如果有@Menus注解，并且有多个@Menu注解，则该方法对应多个菜单、多个权限码：权限码=方法的默认权限码 + 数字后缀(索引或order参数值)
 			HttpServletRequest request = ServletActionContext.getRequest();
@@ -82,21 +82,24 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 			}
 			if (menuIndex != -1) {
 				setTitle(request, menuArray[menuIndex]);
-				if (menuArray[menuIndex].order() != Menu.DEFAULT_ORDER) {
-					menuIndex = menuArray[menuIndex].order();
+				int suffix = menuArray[menuIndex].suffix();
+				if (suffix > Menu.DEFAULT_SUFFIX) {
+					menuIndex = suffix;
 				}
-				permissionCode = method.getDeclaringClass().getName().substring(baseIndex) + '.' + method.getName() + '-' + menuIndex;
+				if (menuIndex != 0) { // 如果不为0才添加后缀
+					permissionCode.append('-').append(menuIndex);
+				}
 			} else {
-				permissionCode = "unknown"; // 如果没有匹配的菜单，则返回"unknown"
+				// 如果没有匹配的菜单，则抛出非法状态异常
+				throw new IllegalStateException('[' + method.toString() + "]权限码参数配置有误");
 			}
 		} else {
 			Menu currentMenu = method.getAnnotation(Menu.class);
 			if (currentMenu != null) {
 				setTitle(ServletActionContext.getRequest(), currentMenu);
 			}
-			permissionCode = method.getDeclaringClass().getName().substring(baseIndex) + '.' + method.getName();
 		}
-		return permissionCode;
+		return permissionCode.toString();
 	}
 
 	/**

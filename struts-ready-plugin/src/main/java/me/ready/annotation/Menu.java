@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Menu {
 
-	int DEFAULT_ORDER = -1;
+	int DEFAULT_SUFFIX = -1;
 
 	/**
 	 * 菜单名称
@@ -30,7 +30,8 @@ public @interface Menu {
 	String[] args() default {};
 
 	/**
-	 * 菜单顺序
+	 * 菜单权限码后缀。<br>
+	 * 默认为-1，(以及其他小于0的值)后缀为默认索引，如果设为0则表示不添加后缀
 	 */
-	int order() default DEFAULT_ORDER;
+	int suffix() default DEFAULT_SUFFIX;
 }
