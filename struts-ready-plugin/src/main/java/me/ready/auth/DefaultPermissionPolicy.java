@@ -48,9 +48,14 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 			// 如果有@Menus注解，并且有多个@Menu注解，则该方法对应多个菜单、多个权限码：权限码=方法的默认权限码 + 数字后缀(索引或order参数值)
 			HttpServletRequest request = ServletActionContext.getRequest();
 			Menu[] menuArray = menus.value();
-			int menuIndex = -1;
+			int menuIndex = -1, suffix = -1;
 			for (int i = 0; i < menuArray.length; i++) {
 				Menu menu = menuArray[i];
+				if (menu.suffix() > Menu.DEFAULT_SUFFIX) {
+					suffix = menu.suffix();
+				} else {
+					suffix++;
+				}
 				String[] args = menu.args(); // 菜单所需校验的额外请求参数的键值对数组
 				if (args.length > 0) {
 					if ((args.length & 1) != 0) { // 数组长度必须为偶数
@@ -82,12 +87,8 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 			}
 			if (menuIndex != -1) {
 				setTitle(request, menuArray[menuIndex]);
-				int suffix = menuArray[menuIndex].suffix();
-				if (suffix > Menu.DEFAULT_SUFFIX) {
-					menuIndex = suffix;
-				}
-				if (menuIndex != 0) { // 如果不为0才添加后缀
-					permissionCode.append('-').append(menuIndex);
+				if (suffix > 0) { // 如果大于0才添加后缀
+					permissionCode.append('-').append(suffix);
 				}
 			} else {
 				// 如果没有匹配的菜单，则抛出非法状态异常
