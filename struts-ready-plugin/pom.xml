@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>me.ready</groupId>
 			<artifactId>ready-x</artifactId>
-			<version>0.2.3-SNAPSHOT</version>
+			<version>0.3.2-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
