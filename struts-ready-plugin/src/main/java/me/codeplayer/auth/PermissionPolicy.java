@@ -1,4 +1,4 @@
-package me.ready.auth;
+package me.codeplayer.auth;
 
 import java.lang.reflect.Method;
 

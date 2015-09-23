@@ -1,10 +1,10 @@
-package me.ready.struts2;
+package me.codeplayer.struts2;
 
 import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletResponse;
 
-import me.ready.annotation.Ready;
+import me.codeplayer.annotation.Ready;
 
 import org.apache.struts2.ServletActionContext;
 
@@ -15,7 +15,7 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
 /**
  * struts-ready-plugin的核心拦截器，action的对应方法必须具有@Ready注解
  * 
- * @package me.ready.struts2
+ * @package me.codeplayer.struts2
  * @author Ready
  * @date 2014-10-25
  */

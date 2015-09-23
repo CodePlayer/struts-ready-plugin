@@ -1,9 +1,9 @@
-package me.ready.auth;
+package me.codeplayer.auth;
 
 import java.lang.reflect.Method;
 
-import me.ready.annotation.Permission;
-import me.ready.util.StringUtil;
+import me.codeplayer.annotation.Permission;
+import me.codeplayer.util.StringUtil;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -14,7 +14,7 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 /**
  * 权限拦截器，用于检测当前用户是否有权限访问当前的类或方法
  * 
- * @package me.ready.auth
+ * @package me.codeplayer.auth
  * @author Ready
  * @date 2014-10-19
  */

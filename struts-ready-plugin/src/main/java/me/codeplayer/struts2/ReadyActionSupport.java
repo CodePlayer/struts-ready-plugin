@@ -1,4 +1,4 @@
-package me.ready.struts2;
+package me.codeplayer.struts2;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletResponse;
 
-import me.ready.util.JSONUtil;
+import me.codeplayer.util.JSONUtil;
 
 import org.apache.struts2.ServletActionContext;
 
@@ -19,7 +19,7 @@ import com.opensymphony.xwork2.ActionSupport;
 /**
  * 自定义的ActionSupport类，其它Action均可继承此类以实现某些功能
  * 
- * @package me.ready.struts2
+ * @package me.codeplayer.struts2
  * @author Ready
  * @date 2014-10-23
  */

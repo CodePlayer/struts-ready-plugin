@@ -1,4 +1,4 @@
-package me.ready.annotation;
+package me.codeplayer.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 菜单注解
  * 
- * @package me.ready.annotation
+ * @package me.codeplayer.annotation
  * @author Ready
  * @date 2015年2月2日
  * 

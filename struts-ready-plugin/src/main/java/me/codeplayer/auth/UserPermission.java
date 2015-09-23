@@ -1,9 +1,9 @@
-package me.ready.auth;
+package me.codeplayer.auth;
 
 /**
  * 用户角色接口
  * 
- * @package me.ready.auth
+ * @package me.codeplayer.auth
  * @author Ready
  * @date 2014-10-20
  */

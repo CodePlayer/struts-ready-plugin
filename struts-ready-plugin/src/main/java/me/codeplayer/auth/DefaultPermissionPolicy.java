@@ -1,12 +1,12 @@
-package me.ready.auth;
+package me.codeplayer.auth;
 
 import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
 
-import me.ready.annotation.Menu;
-import me.ready.annotation.Menus;
-import me.ready.util.StringUtil;
+import me.codeplayer.annotation.Menu;
+import me.codeplayer.annotation.Menus;
+import me.codeplayer.util.StringUtil;
 
 import org.apache.struts2.ServletActionContext;
 
@@ -16,7 +16,7 @@ import com.opensymphony.xwork2.inject.Inject;
 /**
  * 默认的权限策略（用于配置权限码的生成策略等）
  * 
- * @package me.ready.auth
+ * @package me.codeplayer.auth
  * @author Ready
  * @date 2015年2月4日
  * @since

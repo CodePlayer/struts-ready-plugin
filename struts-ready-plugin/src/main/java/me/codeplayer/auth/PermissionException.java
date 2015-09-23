@@ -1,4 +1,4 @@
-package me.ready.auth;
+package me.codeplayer.auth;
 
 /**
  * 项目中的访问权限异常类，用于表示由于没有对应权限所引起的异常
