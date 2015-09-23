@@ -15,7 +15,7 @@
 <struts order="30">
 
 	<!-- 权限拦截相关策略配置类 -->
-	<bean name="permissionPolicy" class="me.ready.auth.DefaultPermissionPolicy" type="me.ready.auth.PermissionPolicy" />
+	<bean name="permissionPolicy" class="me.codeplayer.auth.DefaultPermissionPolicy" type="me.codeplayer.auth.PermissionPolicy" />
 	
 	<!-- 即使没有@Action注解也允许创建action映射 -->
 	<constant name="struts.convention.action.mapAllMatches" value="true" />
@@ -32,7 +32,7 @@
 	<constant name="struts.convention.default.parent.package" value="ready-default" />
 
 	<!-- 实现形如"namespace/action/method"访问方式的ActionMapper核心实现类 -->
-	<constant name="struts.mapper.class" value="me.ready.struts2.ReadyActionMapper" />
+	<constant name="struts.mapper.class" value="me.codeplayer.struts2.ReadyActionMapper" />
 	<!-- 是否启用struts-ready-plugin -->
 	<constant name="struts.ready.enable" value="true" />
 	<!-- 默认的action名称 -->
@@ -49,8 +49,8 @@
 	
 	<package name="ready-default" abstract="true" extends="struts-default">
 		<interceptors>
-			<interceptor name="ready" class="me.ready.struts2.ReadyInterceptor" />
-			<interceptor name="permission" class="me.ready.auth.PermissionInterceptor" />
+			<interceptor name="ready" class="me.codeplayer.struts2.ReadyInterceptor" />
+			<interceptor name="permission" class="me.codeplayer.auth.PermissionInterceptor" />
 			<interceptor-stack name="readyStack">
 				<interceptor-ref name="ready" />
 				<interceptor-ref name="defaultStack">
@@ -65,7 +65,7 @@
 		<default-interceptor-ref name="readyStack" />
 		
 		<!-- 默认Action类 -->
-		<default-class-ref class="me.ready.struts2.ReadyActionSupport" />
+		<default-class-ref class="me.codeplayer.struts2.ReadyActionSupport" />
 	</package>
 	
 </struts>
