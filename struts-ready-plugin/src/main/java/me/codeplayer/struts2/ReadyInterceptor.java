@@ -15,7 +15,6 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
 /**
  * struts-ready-plugin的核心拦截器，action的对应方法必须具有@Ready注解
  * 
- * @package me.codeplayer.struts2
  * @author Ready
  * @date 2014-10-25
  */

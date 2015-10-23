@@ -18,7 +18,6 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 /**
  * 自定义的ActionMapper接口实现类
  * 
- * @package me.codeplayer.struts2
  * @author Ready
  * @date 2014-10-19
  */

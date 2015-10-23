@@ -19,7 +19,6 @@ import com.opensymphony.xwork2.ActionSupport;
 /**
  * 自定义的ActionSupport类，其它Action均可继承此类以实现某些功能
  * 
- * @package me.codeplayer.struts2
  * @author Ready
  * @date 2014-10-23
  */

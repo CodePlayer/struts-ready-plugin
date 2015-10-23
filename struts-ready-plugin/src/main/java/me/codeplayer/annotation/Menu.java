@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 /**
  * 菜单注解
  * 
- * @package me.codeplayer.annotation
  * @author Ready
  * @date 2015年2月2日
  * 
