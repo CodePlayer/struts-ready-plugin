@@ -16,7 +16,6 @@ import com.opensymphony.xwork2.inject.Inject;
 /**
  * 默认的权限策略（用于配置权限码的生成策略等）
  * 
- * @package me.codeplayer.auth
  * @author Ready
  * @date 2015年2月4日
  * @since

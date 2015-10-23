@@ -14,7 +14,6 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 /**
  * 权限拦截器，用于检测当前用户是否有权限访问当前的类或方法
  * 
- * @package me.codeplayer.auth
  * @author Ready
  * @date 2014-10-19
  */
