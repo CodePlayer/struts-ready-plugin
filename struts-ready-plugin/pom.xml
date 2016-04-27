@@ -3,7 +3,7 @@
 
 	<groupId>me.codeplayer</groupId>
 	<artifactId>struts-ready-plugin</artifactId>
-	<version>0.2.8-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>struts-ready-plugin</name>
@@ -38,13 +38,13 @@
 		<dependency>
 			<groupId>me.codeplayer</groupId>
 			<artifactId>ready-x</artifactId>
-			<version>0.4.0-SNAPSHOT</version>
+			<version>0.4.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -5,9 +5,7 @@ import java.lang.reflect.Method;
 import me.codeplayer.annotation.Permission;
 import me.codeplayer.util.StringUtil;
 
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.ActionProxy;
+import com.opensymphony.xwork2.*;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
@@ -19,7 +17,7 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
  */
 public class PermissionInterceptor extends AbstractInterceptor {
 
-	private static final long serialVersionUID = -8700565515654350711L;
+	private static final long serialVersionUID = 1L;
 	/** 存储用户信息的session key */
 	protected String sessionUserKey; // 存储用户信息的session key
 	/** 是否启用权限控制 */
@@ -33,7 +31,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
 
 	@Inject("struts.ready.enable.permission")
 	public void setReadyPermissionEnabled(String enabled) {
-		this.readyPermissionEnabled = "true".equalsIgnoreCase(enabled);
+		this.readyPermissionEnabled = Boolean.parseBoolean(enabled);
 	}
 
 	@Inject("permissionPolicy")
@@ -53,36 +51,29 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		int allow = 0;
 		String permissionCode = null;
 		Class<?> clazz = action.getClass();
-		Permission p = clazz.getAnnotation(Permission.class);
+		String methodName = proxy.getMethod();
+		if (methodName == null)
+			methodName = "execute";
+		Method method = clazz.getMethod(methodName);
+		String methodCode = clazz.getName() + '.' + method.getName();
+		Permission p = method.getAnnotation(Permission.class);
 		if (p != null) {
+			permissionCode = p.value();
+			if (StringUtil.isEmpty(permissionCode)) {
+				permissionCode = permissionPolicy.getCodeFromMethod(invocation, method);
+			}
+			allow = checkPermission(role, permissionCode) ? 1 : -1;
+		} else if ((p = clazz.getAnnotation(Permission.class)) != null) {
 			permissionCode = p.value();
 			if (StringUtil.isEmpty(permissionCode)) {
 				permissionCode = permissionPolicy.getCodeFromClass(invocation, clazz);
 			}
 			allow = checkPermission(role, permissionCode) ? 1 : -1;
 		}
-		if (allow <= 0 && (p == null || role != null)) {
-			String methodName = proxy.getMethod();
-			if (methodName == null)
-				methodName = "execute";
-			try {
-				Method method = clazz.getMethod(methodName);
-				p = method.getAnnotation(Permission.class);
-				if (p != null) {
-					permissionCode = p.value();
-					if (StringUtil.isEmpty(permissionCode)) {
-						permissionCode = permissionPolicy.getCodeFromMethod(invocation, method);
-					}
-					allow = checkPermission(role, permissionCode) ? 1 : -1;
-				}
-			} catch (NoSuchMethodException e) {
-				// ignore exception
-			}
-		}
 		if (allow < 0) {
 			throw new PermissionException("你没有权限进行此操作!");
 		}
-		context.put("permissionCode", permissionCode);
+		context.put("permissionLocator", new String[] { methodCode, permissionCode });
 		return invocation.invoke();
 	}
 
@@ -91,7 +82,6 @@ public class PermissionInterceptor extends AbstractInterceptor {
 	 * 
 	 * @param role 用户角色
 	 * @param code 注解指定的权限码
-	 * @param defaultValue 默认的权限码
 	 * @return
 	 */
 	protected boolean checkPermission(UserPermission role, String code) {
