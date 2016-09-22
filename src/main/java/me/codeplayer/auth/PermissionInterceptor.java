@@ -2,12 +2,11 @@ package me.codeplayer.auth;
 
 import java.lang.reflect.Method;
 
-import me.codeplayer.annotation.Permission;
-import me.codeplayer.util.StringUtil;
-
 import com.opensymphony.xwork2.*;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+
+import me.codeplayer.annotation.Permission;
 
 /**
  * 权限拦截器，用于检测当前用户是否有权限访问当前的类或方法
@@ -59,13 +58,13 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		Permission p = method.getAnnotation(Permission.class);
 		if (p != null) {
 			permissionCode = p.value();
-			if (StringUtil.isEmpty(permissionCode)) {
+			if (permissionCode.length() == 0) {
 				permissionCode = permissionPolicy.getCodeFromMethod(invocation, method);
 			}
 			allow = checkPermission(role, permissionCode) ? 1 : -1;
 		} else if ((p = clazz.getAnnotation(Permission.class)) != null) {
 			permissionCode = p.value();
-			if (StringUtil.isEmpty(permissionCode)) {
+			if (permissionCode.length() == 0) {
 				permissionCode = permissionPolicy.getCodeFromClass(invocation, clazz);
 			}
 			allow = checkPermission(role, permissionCode) ? 1 : -1;

@@ -4,14 +4,13 @@ import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
 
-import me.codeplayer.annotation.Menu;
-import me.codeplayer.annotation.Menus;
-import me.codeplayer.util.StringUtil;
-
 import org.apache.struts2.ServletActionContext;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.inject.Inject;
+
+import me.codeplayer.annotation.Menu;
+import me.codeplayer.annotation.Menus;
 
 /**
  * 默认的权限策略（用于配置权限码的生成策略等）
@@ -63,7 +62,7 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 					boolean isCurrent = true;
 					for (int j = 0; j < args.length; j++) {
 						String value = request.getParameter(args[j++]);
-						if (StringUtil.isEmpty(value)) {
+						if (value == null || value.length() == 0) {
 							isCurrent = false;
 							break;
 						}

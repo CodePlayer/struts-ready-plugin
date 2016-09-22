@@ -1,15 +1,9 @@
 package me.codeplayer.struts2;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletResponse;
-
-import me.codeplayer.util.JSONUtil;
 
 import org.apache.struts2.ServletActionContext;
 
@@ -124,16 +118,5 @@ public class ReadyActionSupport extends ActionSupport {
 	 */
 	protected void writeToResponse(String text) {
 		writeToResponse(text, null);
-	}
-
-	/**
-	 * 将指定对象转为JSON字符串，并写入到响应流中
-	 * 
-	 * @param object 指定的对象
-	 */
-	protected void writeJSON(Object object) {
-		if (object != null) {
-			writeToResponse(JSONUtil.encode(object), null);
-		}
 	}
 }

@@ -17,8 +17,8 @@
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.0</version>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -26,12 +26,6 @@
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-convention-plugin</artifactId>
 			<version>2.3.30</version>
-		</dependency>
-
-		<dependency>
-			<groupId>me.codeplayer</groupId>
-			<artifactId>ready-x</artifactId>
-			<version>0.4.2-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
