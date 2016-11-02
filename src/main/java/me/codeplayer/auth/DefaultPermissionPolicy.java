@@ -17,8 +17,6 @@ import me.codeplayer.annotation.Menus;
  * 
  * @author Ready
  * @date 2015年2月4日
- * @since
- * 
  */
 public class DefaultPermissionPolicy implements PermissionPolicy {
 
