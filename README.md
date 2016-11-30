@@ -1,5 +1,5 @@
 # struts-ready-plugin
-基于Struts2 + Struts Convention的Struts插件，无需配置任何action即可享用类似"namespace/action/method.suffix"(后缀可省略)格式的URL访问方式。并集成文件下载、JSON输出等多种常用的Web功能，大幅减少冗余的配置和编码工作。
+基于Struts2 + Struts Convention的Struts插件，无需配置任何action即可享用类似"namespace/action/method.suffix"(后缀可省略)格式的URL访问方式。并集成文件下载、权限控制等多种常用的Web功能，大幅减少冗余的配置和编码工作。
 
 Struts 2是非常流行的开源 MVC 框架，熟练使用 Struts 也是一个Java EE开发人员的必备技能，因此此处不再赘述 Struts 2 的用法细则。你可以直接参考 Struts 的官方文档。
 
