@@ -20,6 +20,9 @@ import me.codeplayer.annotation.Menus;
  */
 public class DefaultPermissionPolicy implements PermissionPolicy {
 
+	/** 菜单名称在request中的KEY值 */
+	public static final String TITLE_KEY = "__title";
+	//
 	protected String basePackage;
 	protected int baseIndex;
 
@@ -106,6 +109,6 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 	 * @param currentMenu
 	 */
 	protected static final void setTitle(HttpServletRequest request, Menu currentMenu) {
-		request.setAttribute("__title", currentMenu.name());
+		request.setAttribute(TITLE_KEY, currentMenu.name());
 	}
 }

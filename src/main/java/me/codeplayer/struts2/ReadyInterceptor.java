@@ -40,7 +40,7 @@ public class ReadyInterceptor implements Interceptor {
 			notFound = true;
 		}
 		if (notFound) {
-			ServletActionContext.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND, "无法访问指定的方法!");
+			ServletActionContext.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND, "Resource Not Found");
 			return null;
 		}
 		return invocation.invoke();

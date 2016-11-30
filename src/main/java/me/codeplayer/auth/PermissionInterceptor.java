@@ -17,6 +17,9 @@ import me.codeplayer.annotation.Permission;
 public class PermissionInterceptor extends AbstractInterceptor {
 
 	private static final long serialVersionUID = 1L;
+	/** 权限定位符数组在request中的KEY值 */
+	public static final String PERMISSION_LOCATOR_KEY = "permissionLocator";
+	//
 	/** 存储用户信息的session key */
 	protected String sessionUserKey; // 存储用户信息的session key
 	/** 是否启用权限控制 */
@@ -72,7 +75,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		if (allow < 0) {
 			throw new PermissionException("你没有权限进行此操作!");
 		}
-		context.put("permissionLocator", new String[] { methodCode, permissionCode });
+		context.put(PERMISSION_LOCATOR_KEY, new String[] { methodCode, permissionCode });
 		return invocation.invoke();
 	}
 
