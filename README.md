@@ -80,3 +80,63 @@ Struts Ready将会在该配置所指定的包下面扫描所有的 Action 类和
 `me.codeplayer.action.HelloAction.index()` 方法，我们可以直接通过 http://example.com/hello/ 进行访问。
 
 >注意：出于性能和区分考虑，除了根URL外，缺省形式的URL必须以"/"号结尾。
+
+你也可以在 struts.xml 中通过以下配置更改缺省的action名称和方法名称：
+
+```xml
+<!-- 默认的action名称(默认为default) -->
+<constant name="struts.ready.default.action" value="default" />
+<!-- 默认的method名称(默认为index) -->
+<constant name="struts.ready.default.method" value="index" />
+```
+
+此外，你也可以通过如下配置启用/禁用该缺省匹配机制：
+
+```xml
+<!-- 是否启用默认的action和method(默认为true) -->
+<constant name="struts.ready.enable.default" value="false" />
+```
+
+## Struts Ready插件的result匹配机制
+
+### 一般匹配机制
+
+一般情况下，当我们执行请求方法，并处理完对应的业务逻辑后，我们还需要输出响应页面，从而完成与用户之间的请求交互。
+
+在原始的Struts Action类中，执行方法需要返回一个字符串值。这个字符串就对应了我们在 struts.xml 中配置的 <result> 节点的 name 属性值，Struts 据此找到对应的JSP页面（或其他模板页面）并进行渲染输出显示。
+在Struts Ready中，我们无须在 struts.xml 中定义result的配置，因为它能够根据约定，自动建立 result 字符串到对应页面路径的映射。
+以 `me.codeplayer.action.UserAction.hello()` 返回的 result 为例，其具体映射规则如下：
+
+| result组成 | 映射规则 |
+| --------- | ---------|
+| result字符串 | 对应的显示页面路径为（映射名称即是Action URL匹配的映射名称，没有的部分可省略）：{页面文件根目录}/{action子包映射名称}/{action类名的映射名称}/{result字符串}.jsp |
+
+例如：
+
+-  me.codeplayer.action.UserAction.hello()方法返回"test"，则对应的页面路径为：{页面文件根目录}/user/test.jsp
+-  me.codeplayer.action.UserAction.hello()方法返回"user_login"，则对应的页面路径为： {页面文件根目录}/user/user_login.jsp
+-  me.codeplayer.action.admin.DefaultAction.index()方法返回"error"，则对应的页面路径为： {页面文件根目录}/admin/default/error.jsp
+-  me.codeplayer.action.admin.HelloWorldAction.hello()方法返回"sayHi"，则对应的页面路径为：{页面文件根目录}/admin/hello-world/sayHi.jsp
+
+页面文件的根目录默认为"/WEB-INF/content/"。当然，这也是可以通过配置文件进行修改的：
+
+```xml
+<!-- result文件的所在路径(默认为："/WEB-INF/content/") -->
+<constant name="struts.convention.result.path" value="/WEB-INF/page/" />
+```
+
+此外，result的映射文件，不仅支持常用的JSP格式，也支持Freemarker、Velocity等模板文件。在查找匹配时，Struts Ready将默认按照以下顺序依次查找对应文件后缀（result type）的页面文件：
+jsp -> htm/html -> vm -> ftl
+
+你也可以使用以下设置自定义查找的result的type属性值（多个以英文逗号隔开）以及查找顺序：
+
+```xml
+<!-- result的type类型(默认为："dispatcher,velocity,freemarker") -->
+<constant name="struts.convention.relative.result.types" value="dispatcher" />
+```
+
+### 特殊匹配机制
+
+为了更加便于常规使用，对于 Struts 的 result 常量 `Action.SUCCESS`（即字符串"success"），Struts Ready插件进行了相应的特殊处理：以JSP为例，它会先查找对应路径下的 success.jsp 文件，然后再查找 index.jsp 文件，并以第一个找到的文件输出响应。
+
+
