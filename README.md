@@ -29,9 +29,9 @@ public class UserAction {
 }
 ```
 
->问：为什么一定要给方法加上 `@Ready` 注解？
->答：因为在Action类中一般还有供Struts进行属性注入的 getter/setter 方法。例如，UserAction类具有 user 属性，以及对应的 getUser() 和 setUser() 方法。如果没有@Ready加以区别的话，用户甚至可以通过URL "/user/getUser" 来访问getUser()方法。这将产生一些不必要的问题，并有一定的安全隐患。
->因此，我们定义了`@Ready`注解，只有标注了该注解的方法才允许外部访问，否则显示HTTP 404。
+> 问：为什么一定要给方法加上 `@Ready` 注解？
+> 答：因为在Action类中一般还有供Struts进行属性注入的 getter/setter 方法。例如，UserAction类具有 user 属性，以及对应的 getUser() 和 setUser() 方法。如果没有@Ready加以区别的话，用户甚至可以通过URL "/user/getUser" 来访问getUser()方法。这将产生一些不必要的问题，并有一定的安全隐患。
+> 因此，我们定义了`@Ready`注解，只有标注了该注解的方法才允许外部访问，否则显示HTTP 404。
 
 ## Struts Ready 插件的Action匹配机制
 
@@ -113,12 +113,12 @@ Struts Ready将会在该配置所指定的包下面扫描所有的 Action 类和
 
 例如：
 
--  me.codeplayer.action.UserAction.hello()方法返回"test"，则对应的页面路径为：{页面文件根目录}/user/test.jsp
--  me.codeplayer.action.UserAction.hello()方法返回"user_login"，则对应的页面路径为： {页面文件根目录}/user/user_login.jsp
--  me.codeplayer.action.admin.DefaultAction.index()方法返回"error"，则对应的页面路径为： {页面文件根目录}/admin/default/error.jsp
--  me.codeplayer.action.admin.HelloWorldAction.hello()方法返回"sayHi"，则对应的页面路径为：{页面文件根目录}/admin/hello-world/sayHi.jsp
+-  `me.codeplayer.action.UserAction.hello()` 方法返回"test"，则对应的页面路径为：{页面文件根目录}/user/test.jsp
+-  `me.codeplayer.action.UserAction.hello()` 方法返回"user_login"，则对应的页面路径为： {页面文件根目录}/user/user_login.jsp
+-  `me.codeplayer.action.admin.DefaultAction.index()` 方法返回"error"，则对应的页面路径为： {页面文件根目录}/admin/default/error.jsp
+-  `me.codeplayer.action.admin.HelloWorldAction.hello()` 方法返回"sayHi"，则对应的页面路径为：{页面文件根目录}/admin/hello-world/sayHi.jsp
 
-页面文件的根目录默认为"/WEB-INF/content/"。当然，这也是可以通过配置文件进行修改的：
+页面文件的根目录默认为 "/WEB-INF/content/" 。当然，这也是可以通过配置文件进行修改的：
 
 ```xml
 <!-- result文件的所在路径(默认为："/WEB-INF/content/") -->
@@ -126,7 +126,7 @@ Struts Ready将会在该配置所指定的包下面扫描所有的 Action 类和
 ```
 
 此外，result的映射文件，不仅支持常用的JSP格式，也支持Freemarker、Velocity等模板文件。在查找匹配时，Struts Ready将默认按照以下顺序依次查找对应文件后缀（result type）的页面文件：
-jsp -> htm/html -> vm -> ftl
+> jsp -> htm/html -> vm -> ftl
 
 你也可以使用以下设置自定义查找的result的type属性值（多个以英文逗号隔开）以及查找顺序：
 
