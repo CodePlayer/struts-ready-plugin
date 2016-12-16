@@ -1,9 +1,6 @@
 package me.codeplayer.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * 菜单注解
@@ -33,4 +30,9 @@ public @interface Menu {
 	 * 默认为-1，(以及其他小于0的值)后缀为默认索引，如果设为0则表示不添加后缀
 	 */
 	int suffix() default DEFAULT_SUFFIX;
+
+	/**
+	 * 额外的字符串数据
+	 */
+	String extra() default "";
 }
