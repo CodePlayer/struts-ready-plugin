@@ -1,10 +1,6 @@
 package me.codeplayer.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * 用于进行权限控制的注解，将该注解应用在对应的类型或方法上，即可在调用指定的类型或方法时，自动进行对应的权限判断<br>
@@ -22,4 +18,10 @@ public @interface Permission {
 	 * 权限码
 	 */
 	String value() default "";
+
+	/**
+	 * 需要进行多权限管理的方法菜单数组<br>
+	 * 该注解属性只能在方法上定义，否则无效
+	 */
+	Menu[] menus() default {};
 }

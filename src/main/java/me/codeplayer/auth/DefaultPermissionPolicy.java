@@ -33,20 +33,22 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 		baseIndex = basePackage.length() + 1;
 	}
 
-	public String getCodeFromClass(ActionInvocation actionInvocation, Class<?> clazz) {
+	public String getCodeFromClass(ActionInvocation invocation, Class<?> clazz, Permission permission) {
 		return clazz.getName().substring(baseIndex);
 	}
 
-	public String getCodeFromMethod(ActionInvocation actionInvocation, Method method) {
-		final Menus menus = method.getAnnotation(Menus.class);
-		final StringBuilder permissionCode = new StringBuilder(method.getDeclaringClass().getName().substring(baseIndex)).append('.').append(method.getName());
-		Menu[] menuArray;
-		if (menus != null && (menuArray = menus.value()).length > 1) {
-			// 如果有@Menus注解，并且有多个@Menu注解，则该方法对应多个菜单、多个权限码：权限码=方法的默认权限码 + 数字后缀(索引或order参数值)
-			final HttpServletRequest request = (HttpServletRequest) actionInvocation.getInvocationContext().get(StrutsStatics.HTTP_REQUEST);
+	public String getCodeFromMethod(ActionInvocation invocation, Method method, Permission permission) {
+		String permissionCode = null;
+		final Menu[] menus = permission.menus();
+		if (menus.length > 1) {
+			final StringBuilder permissionCodeBuilder = new StringBuilder(method.getDeclaringClass().getName().substring(baseIndex)).append('.').append(method.getName());
+			// 如果有@Menus注解，并且有多个@Menu注解
+			// 则该方法对应多个菜单、多个权限码：权限码=方法的默认权限码 + 数字后缀(索引或suffix参数值)
+			// 后缀为 0 时，不追加后缀
+			final HttpServletRequest request = (HttpServletRequest) invocation.getInvocationContext().get(StrutsStatics.HTTP_REQUEST);
 			int menuIndex = -1, suffix = -1;
-			for (int i = 0; i < menuArray.length; i++) {
-				Menu menu = menuArray[i];
+			for (int i = 0; i < menus.length; i++) {
+				Menu menu = menus[i];
 				if (menu.suffix() > Menu.DEFAULT_SUFFIX) {
 					suffix = menu.suffix();
 				} else {
@@ -82,16 +84,14 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 				}
 			}
 			if (menuIndex != -1) {
-				setTitle(request, menuArray[menuIndex]);
+				setTitle(request, menus[menuIndex]);
 				if (suffix > 0) { // 如果大于0才添加后缀
-					permissionCode.append('-').append(suffix);
+					permissionCodeBuilder.append('-').append(suffix);
 				}
-			} else {
-				// 如果没有匹配的菜单，则抛出非法状态异常
-				throw new IllegalStateException('[' + method.toString() + "]权限码参数配置有误");
+				permissionCode = permissionCodeBuilder.toString();
 			}
 		}
-		return permissionCode.toString();
+		return permissionCode;
 	}
 
 	/**
@@ -100,7 +100,10 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 	 * @param request
 	 * @param currentMenu
 	 */
-	public static final void setTitle(HttpServletRequest request, Menu currentMenu) {
-		request.setAttribute(Ready.TITLE_KEY, currentMenu.name());
+	public static final void setTitle(final HttpServletRequest request, final Menu currentMenu) {
+		final String title = currentMenu.name();
+		if (title.length() > 0) {
+			request.setAttribute(Ready.TITLE_KEY, title);
+		}
 	}
 }

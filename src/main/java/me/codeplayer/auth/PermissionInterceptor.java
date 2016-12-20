@@ -62,13 +62,19 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		if (p != null) {
 			permissionCode = p.value();
 			if (permissionCode.length() == 0) {
-				permissionCode = permissionPolicy.getCodeFromMethod(invocation, method);
+				permissionCode = permissionPolicy.getCodeFromMethod(invocation, method, p);
+				if (permissionCode == null) {
+					throw new PermissionException('[' + method.toString() + "]权限码参数配置有误");
+				}
 			}
 			allow = checkPermission(role, permissionCode) ? 1 : -1;
 		} else if ((p = clazz.getAnnotation(Permission.class)) != null) {
 			permissionCode = p.value();
 			if (permissionCode.length() == 0) {
-				permissionCode = permissionPolicy.getCodeFromClass(invocation, clazz);
+				permissionCode = permissionPolicy.getCodeFromClass(invocation, clazz, p);
+				if (permissionCode == null) {
+					throw new PermissionException('[' + clazz.toString() + "]权限码参数配置有误");
+				}
 			}
 			allow = checkPermission(role, permissionCode) ? 1 : -1;
 		}
