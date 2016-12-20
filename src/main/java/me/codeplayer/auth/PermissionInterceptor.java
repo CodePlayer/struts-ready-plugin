@@ -6,6 +6,7 @@ import com.opensymphony.xwork2.*;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
+import me.codeplayer.annotation.Menu;
 import me.codeplayer.annotation.Permission;
 
 /**
@@ -50,19 +51,21 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		UserPermission role = (UserPermission) context.getSession().get(sessionUserKey);
 		ActionProxy proxy = invocation.getProxy();
 		Object action = proxy.getAction();
-		int allow = 0;
+		int allow = 0; // 小于 0 则表示不允许；
 		String permissionCode = null;
-		Class<?> clazz = action.getClass();
+		final Class<?> clazz = action.getClass();
 		String methodName = proxy.getMethod();
 		if (methodName == null)
 			methodName = "execute";
-		Method method = clazz.getMethod(methodName);
+		final Method method = clazz.getMethod(methodName);
 		String methodCode = clazz.getName() + '.' + method.getName();
 		Permission p = method.getAnnotation(Permission.class);
+		Menu[] menus = null;
 		if (p != null) {
 			permissionCode = p.value();
-			if (permissionCode.length() == 0) {
-				permissionCode = permissionPolicy.getCodeFromMethod(invocation, method, p);
+			menus = p.menus();
+			if (permissionCode.length() == 0 || menus.length > 0) {
+				permissionCode = permissionPolicy.getPermissionCode(method, invocation, p, menus);
 				if (permissionCode == null) {
 					throw new PermissionException('[' + method.toString() + "]权限码参数配置有误");
 				}
@@ -70,8 +73,9 @@ public class PermissionInterceptor extends AbstractInterceptor {
 			allow = checkPermission(role, permissionCode) ? 1 : -1;
 		} else if ((p = clazz.getAnnotation(Permission.class)) != null) {
 			permissionCode = p.value();
-			if (permissionCode.length() == 0) {
-				permissionCode = permissionPolicy.getCodeFromClass(invocation, clazz, p);
+			menus = p.menus();
+			if (permissionCode.length() == 0 || menus.length > 0) {
+				permissionCode = permissionPolicy.getPermissionCode(clazz, invocation, p, menus);
 				if (permissionCode == null) {
 					throw new PermissionException('[' + clazz.toString() + "]权限码参数配置有误");
 				}
