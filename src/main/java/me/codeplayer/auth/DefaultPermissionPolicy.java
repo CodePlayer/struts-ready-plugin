@@ -4,13 +4,12 @@ import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.inject.Inject;
 
-import me.codeplayer.annotation.Menu;
-import me.codeplayer.annotation.Menus;
+import me.codeplayer.annotation.*;
 
 /**
  * 默认的权限策略（用于配置权限码的生成策略等）
@@ -20,8 +19,6 @@ import me.codeplayer.annotation.Menus;
  */
 public class DefaultPermissionPolicy implements PermissionPolicy {
 
-	/** 菜单名称在request中的KEY值 */
-	public static final String TITLE_KEY = "__title";
 	//
 	protected String basePackage;
 	protected int baseIndex;
@@ -46,7 +43,7 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 		Menu[] menuArray;
 		if (menus != null && (menuArray = menus.value()).length > 1) {
 			// 如果有@Menus注解，并且有多个@Menu注解，则该方法对应多个菜单、多个权限码：权限码=方法的默认权限码 + 数字后缀(索引或order参数值)
-			final HttpServletRequest request = ServletActionContext.getRequest();
+			final HttpServletRequest request = (HttpServletRequest) actionInvocation.getInvocationContext().get(StrutsStatics.HTTP_REQUEST);
 			int menuIndex = -1, suffix = -1;
 			for (int i = 0; i < menuArray.length; i++) {
 				Menu menu = menuArray[i];
@@ -93,11 +90,6 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 				// 如果没有匹配的菜单，则抛出非法状态异常
 				throw new IllegalStateException('[' + method.toString() + "]权限码参数配置有误");
 			}
-		} else {
-			final Menu currentMenu = method.getAnnotation(Menu.class);
-			if (currentMenu != null) {
-				setTitle(ServletActionContext.getRequest(), currentMenu);
-			}
 		}
 		return permissionCode.toString();
 	}
@@ -108,7 +100,7 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 	 * @param request
 	 * @param currentMenu
 	 */
-	protected static final void setTitle(HttpServletRequest request, Menu currentMenu) {
-		request.setAttribute(TITLE_KEY, currentMenu.name());
+	public static final void setTitle(HttpServletRequest request, Menu currentMenu) {
+		request.setAttribute(Ready.TITLE_KEY, currentMenu.name());
 	}
 }

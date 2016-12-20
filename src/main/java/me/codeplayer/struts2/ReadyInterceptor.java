@@ -2,9 +2,10 @@ package me.codeplayer.struts2;
 
 import java.lang.reflect.Method;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
@@ -35,12 +36,18 @@ public class ReadyInterceptor implements Interceptor {
 		boolean notFound = false;
 		try {
 			Method method = action.getClass().getMethod(methodName);
-			notFound = method == null || method.getAnnotation(Ready.class) == null;
+			Ready ready = null;
+			notFound = method == null || (ready = method.getAnnotation(Ready.class)) == null;
+			if (ready != null && ready.value().length() > 0) { // 设置标题
+				HttpServletRequest request = (HttpServletRequest) invocation.getInvocationContext().get(StrutsStatics.HTTP_REQUEST);
+				request.setAttribute(Ready.TITLE_KEY, ready.value());
+			}
 		} catch (NoSuchMethodException e) {
 			notFound = true;
 		}
 		if (notFound) {
-			ServletActionContext.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND, "Resource Not Found");
+			HttpServletResponse response = (HttpServletResponse) invocation.getInvocationContext().get(StrutsStatics.HTTP_RESPONSE);
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "Resource Not Found");
 			return null;
 		}
 		return invocation.invoke();

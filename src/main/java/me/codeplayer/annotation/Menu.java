@@ -9,8 +9,9 @@ import java.lang.annotation.*;
  * @date 2015年2月2日
  * 
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Menu {
 
 	int DEFAULT_SUFFIX = -1;

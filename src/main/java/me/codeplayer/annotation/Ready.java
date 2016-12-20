@@ -1,9 +1,6 @@
 package me.codeplayer.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * 该注解用于标识Action类中的方法准备已经就绪，允许外部访问
@@ -13,6 +10,23 @@ import java.lang.annotation.Target;
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Ready {
-	
+
+	/** 标题在request中的KEY值 */
+	String TITLE_KEY = "__title";
+
+	/**
+	 * 页面的标题
+	 * 
+	 * @return
+	 */
+	String value() default "";
+
+	/**
+	 * 额外的信息字符串
+	 * 
+	 * @return
+	 */
+	String extra() default "";
 }

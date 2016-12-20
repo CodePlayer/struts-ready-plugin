@@ -15,7 +15,7 @@
 <struts order="30">
 
 	<!-- 权限拦截相关策略配置类 -->
-	<bean name="permissionPolicy" class="me.codeplayer.auth.DefaultPermissionPolicy" type="me.codeplayer.auth.PermissionPolicy" />
+	<bean type="me.codeplayer.auth.PermissionPolicy" name="ready" class="me.codeplayer.auth.DefaultPermissionPolicy" />
 	
 	<!-- 即使没有@Action注解也允许创建action映射 -->
 	<constant name="struts.convention.action.mapAllMatches" value="true" />
