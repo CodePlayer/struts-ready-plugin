@@ -35,20 +35,41 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 	}
 
 	@Override
-	public String getPermissionCode(AnnotatedElement element, ActionInvocation invocation, Permission permission, Menu[] menus) {
-		if (element instanceof Class) {
-			return getCodeFromClass(invocation, (Class<?>) element, permission, menus);
-		} else {
-			return getCodeFromMethod(invocation, (Method) element, permission, menus);
+	public PermissionLocator handlePermission(ActionInvocation invocation, final Class<?> clazz, final Method method) {
+		Permission p = method.getAnnotation(Permission.class);
+		if (p != null) {
+			return locatePermission(clazz, method, invocation, method, p);
+		} else if ((p = clazz.getAnnotation(Permission.class)) != null) {
+			return locatePermission(clazz, method, invocation, clazz, p);
 		}
+		return null;
 	}
 
-	protected String getCodeFromClass(final ActionInvocation invocation, final Class<?> clazz, final Permission p, final Menu[] menus) {
-		return clazz.getName().substring(baseIndex);
+	protected PermissionLocator locatePermission(final Class<?> clazz, final Method target, final ActionInvocation invocation, final AnnotatedElement element, final Permission p) {
+		String code = p.value();
+		Menu[] menus = p.menus();
+		PermissionLocator locator = null;
+		if (code.length() == 0 || menus.length > 0) {
+			if (element instanceof Class) {
+				locator = handleMenusBasedClass(clazz, target, invocation, p, menus);
+			} else {
+				locator = handleMenusBasedMethod(clazz, target, invocation, p, menus);
+			}
+			if (locator != null && locator.permissionCode == null) {
+				throw new PermissionException('[' + element.toString() + "]权限码参数配置有误");
+			}
+		} else {
+			locator = new PermissionLocator(target, target.getName(), code);
+		}
+		return locator;
 	}
 
-	protected String getCodeFromMethod(final ActionInvocation invocation, final Method method, final Permission p, final Menu[] menus) {
-		String permissionCode = null;
+	protected PermissionLocator handleMenusBasedClass(final Class<?> clazz, final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
+		return new PermissionLocator(method, method.getName(), clazz.getName().substring(baseIndex));
+	}
+
+	protected PermissionLocator handleMenusBasedMethod(final Class<?> clazz, final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
+		PermissionLocator locator = new PermissionLocator(method, method.getName(), null);
 		if (menus.length > 1) {
 			final StringBuilder permissionCodeBuilder = getMethodPermissionBuilder(method, invocation, p, menus);
 			// 如果有@Menus注解，并且有多个@Menu注解
@@ -64,10 +85,12 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 			}
 			if (menuIndex != -1) {
 				setTitle(request, menus[menuIndex]);
-				permissionCode = buildMethodPermissionCode(permissionCodeBuilder, menus[menuIndex], suffixRef[0]);
+				locator.methodCode = new StringBuilder(locator.methodCode.length() + 3)
+						.append(locator.methodCode).append('-').append(suffixRef[0]).toString();
+				locator.permissionCode = buildMethodPermissionCode(permissionCodeBuilder, menus[menuIndex], suffixRef[0]);
 			}
 		}
-		return permissionCode;
+		return locator;
 	}
 
 	protected boolean matchMethodMenu(final HttpServletRequest request, final Menu menu, final int[] suffixRef) {
