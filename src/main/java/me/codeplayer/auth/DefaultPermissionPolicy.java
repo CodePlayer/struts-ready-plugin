@@ -45,21 +45,21 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 		return null;
 	}
 
-	protected PermissionLocator locatePermission(final Class<?> clazz, final Method target, final ActionInvocation invocation, final AnnotatedElement element, final Permission p) {
+	protected PermissionLocator locatePermission(final Class<?> clazz, final Method method, final ActionInvocation invocation, final AnnotatedElement element, final Permission p) {
 		String code = p.value();
 		Menu[] menus = p.menus();
 		PermissionLocator locator = null;
 		if (code.length() == 0 || menus.length > 0) {
 			if (element instanceof Class) {
-				locator = handleMenusBasedClass(clazz, target, invocation, p, menus);
+				locator = handleMenusBasedClass(clazz, method, invocation, p, menus);
 			} else {
-				locator = handleMenusBasedMethod(clazz, target, invocation, p, menus);
+				locator = handleMenusBasedMethod(clazz, method, invocation, p, menus);
 			}
 			if (locator != null && locator.permissionCode == null) {
 				throw new PermissionException('[' + element.toString() + "]权限码参数配置有误");
 			}
 		} else {
-			locator = new PermissionLocator(target, target.getName().substring(baseIndex), code);
+			locator = new PermissionLocator(method, methodCodeBuilder(clazz, method).toString(), code);
 		}
 		return locator;
 	}
