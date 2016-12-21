@@ -70,7 +70,7 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 	}
 
 	protected PermissionLocator handleMenusBasedMethod(final Class<?> clazz, final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
-		final PermissionLocator locator = new PermissionLocator(method, methodCodeBuilder(clazz, method).toString(), null);
+		final PermissionLocator locator = new PermissionLocator(method, null, null);
 		if (menus.length > 1) {
 			// 如果有@Menus注解，并且有多个@Menu注解
 			// 则该方法对应多个菜单、多个权限码：权限码=方法的默认权限码 + 数字后缀(索引或suffix参数值)
@@ -86,14 +86,16 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 			if (menuIndex != -1) {
 				setTitle(request, menus[menuIndex]);
 				if (suffixRef[0] > 0) {
-					locator.methodCode = new StringBuilder(locator.methodCode.length() + 3)
-							.append(locator.methodCode).append('-').append(suffixRef[0]).toString();
+					locator.methodCode = methodCodeBuilder(clazz, method).append('-').append(suffixRef[0]).toString();
 				}
 				locator.permissionCode = buildMethodPermissionCode(
 						methodPermissionBuilder(clazz, method, invocation, p, menus),
 						menus[menuIndex],
 						suffixRef[0]);
 			}
+		}
+		if (locator.methodCode == null) {
+			locator.methodCode = methodCodeBuilder(clazz, method).toString();
 		}
 		return locator;
 	}
