@@ -59,17 +59,18 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 				throw new PermissionException('[' + element.toString() + "]权限码参数配置有误");
 			}
 		} else {
-			locator = new PermissionLocator(target, target.getName(), code);
+			locator = new PermissionLocator(target, target.getName().substring(baseIndex), code);
 		}
 		return locator;
 	}
 
 	protected PermissionLocator handleMenusBasedClass(final Class<?> clazz, final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
-		return new PermissionLocator(method, method.getName(), clazz.getName().substring(baseIndex));
+		final String permissionCode = clazz.getName().substring(baseIndex);
+		return new PermissionLocator(method, permissionCode, permissionCode);
 	}
 
 	protected PermissionLocator handleMenusBasedMethod(final Class<?> clazz, final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
-		PermissionLocator locator = new PermissionLocator(method, method.getName(), null);
+		PermissionLocator locator = new PermissionLocator(method, method.getName().substring(baseIndex), null);
 		if (menus.length > 1) {
 			final StringBuilder permissionCodeBuilder = getMethodPermissionBuilder(method, invocation, p, menus);
 			// 如果有@Menus注解，并且有多个@Menu注解
