@@ -70,9 +70,8 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 	}
 
 	protected PermissionLocator handleMenusBasedMethod(final Class<?> clazz, final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
-		PermissionLocator locator = new PermissionLocator(method, method.getName().substring(baseIndex), null);
+		final PermissionLocator locator = new PermissionLocator(method, methodCodeBuilder(clazz, method).toString(), null);
 		if (menus.length > 1) {
-			final StringBuilder permissionCodeBuilder = getMethodPermissionBuilder(method, invocation, p, menus);
 			// 如果有@Menus注解，并且有多个@Menu注解
 			// 则该方法对应多个菜单、多个权限码：权限码=方法的默认权限码 + 数字后缀(索引或suffix参数值)
 			// 后缀为 0 时，不追加后缀
@@ -86,9 +85,14 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 			}
 			if (menuIndex != -1) {
 				setTitle(request, menus[menuIndex]);
-				locator.methodCode = new StringBuilder(locator.methodCode.length() + 3)
-						.append(locator.methodCode).append('-').append(suffixRef[0]).toString();
-				locator.permissionCode = buildMethodPermissionCode(permissionCodeBuilder, menus[menuIndex], suffixRef[0]);
+				if (suffixRef[0] > 0) {
+					locator.methodCode = new StringBuilder(locator.methodCode.length() + 3)
+							.append(locator.methodCode).append('-').append(suffixRef[0]).toString();
+				}
+				locator.permissionCode = buildMethodPermissionCode(
+						methodPermissionBuilder(clazz, method, invocation, p, menus),
+						menus[menuIndex],
+						suffixRef[0]);
 			}
 		}
 		return locator;
@@ -121,10 +125,14 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 		return true;
 	}
 
-	protected StringBuilder getMethodPermissionBuilder(final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
+	protected StringBuilder methodPermissionBuilder(final Class<?> clazz, final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
 		String code = p.value();
 		return code.length() > 0 ? new StringBuilder(code)
-				: new StringBuilder(method.getDeclaringClass().getName().substring(baseIndex)).append('.').append(method.getName());
+				: methodCodeBuilder(clazz, method);
+	}
+
+	protected StringBuilder methodCodeBuilder(Class<?> clazz, Method method) {
+		return new StringBuilder().append(clazz.getName().substring(baseIndex)).append('.').append(method.getName());
 	}
 
 	protected String buildMethodPermissionCode(final StringBuilder permissionCodeBuilder, final Menu menu, final int suffix) {
