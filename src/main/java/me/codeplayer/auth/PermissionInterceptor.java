@@ -34,7 +34,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		this.readyPermissionEnabled = Boolean.parseBoolean(enabled);
 	}
 
-	@Inject
+	@Inject("ready")
 	public void setPermissionPolicy(PermissionPolicy permissionPolicy) {
 		this.permissionPolicy = permissionPolicy;
 	}

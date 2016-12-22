@@ -71,7 +71,9 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 
 	protected PermissionLocator handleMenusBasedMethod(final Class<?> clazz, final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
 		final PermissionLocator locator = new PermissionLocator(method, null, null);
-		if (menus.length > 1) {
+		if (menus.length == 0) {
+			locator.methodCode = locator.permissionCode = methodCodeBuilder(clazz, method).toString();
+		} else if (menus.length > 1) {
 			// 如果有@Menus注解，并且有多个@Menu注解
 			// 则该方法对应多个菜单、多个权限码：权限码=方法的默认权限码 + 数字后缀(索引或suffix参数值)
 			// 后缀为 0 时，不追加后缀
