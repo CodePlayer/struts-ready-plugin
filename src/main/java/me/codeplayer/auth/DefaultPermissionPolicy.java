@@ -83,6 +83,7 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 			for (int i = 0; i < menus.length; i++) {
 				if (matchMethodMenu(request, menus[i], suffixRef)) {
 					menuIndex = i;
+					break;
 				}
 			}
 			if (menuIndex != -1) {
