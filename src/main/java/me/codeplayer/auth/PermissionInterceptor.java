@@ -6,6 +6,8 @@ import com.opensymphony.xwork2.*;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
+import me.codeplayer.struts2.ReadyInterceptor;
+
 /**
  * 权限拦截器，用于检测当前用户是否有权限访问当前的类或方法
  * 
@@ -43,15 +45,11 @@ public class PermissionInterceptor extends AbstractInterceptor {
 		if (!readyPermissionEnabled) {
 			return invocation.invoke();
 		}
-		// ServletActionContext.getRequest().getSession().getAttribute(sessionUserKey);
 		ActionContext context = ActionContext.getContext();
 		UserPermission role = (UserPermission) context.getSession().get(sessionUserKey);
 		ActionProxy proxy = invocation.getProxy();
 		final Class<?> clazz = proxy.getAction().getClass();
-		String methodName = proxy.getMethod();
-		if (methodName == null)
-			methodName = "execute";
-		final Method method = clazz.getMethod(methodName);
+		final Method method = ReadyInterceptor.getTargetMethod(invocation);
 		final PermissionLocator locator = permissionPolicy.handlePermission(invocation, clazz, method);
 		if (locator != null
 				&&
