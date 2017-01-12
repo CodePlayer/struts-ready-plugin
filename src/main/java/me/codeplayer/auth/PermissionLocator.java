@@ -10,15 +10,20 @@ import java.lang.reflect.Method;
  */
 public class PermissionLocator {
 
+	/** 权限定位符数组在request中的KEY值 */
+	public static final String PERMISSION_LOCATOR_KEY = "permissionLocator";
+	//
 	protected Method method;
+	protected int menuSuffix;
 	protected String methodCode;
 	protected String permissionCode;
 
 	public PermissionLocator() {
 	}
 
-	public PermissionLocator(Method method, String methodCode, String permissionCode) {
+	public PermissionLocator(Method method, int menuSuffix, String methodCode, String permissionCode) {
 		this.method = method;
+		this.menuSuffix = menuSuffix;
 		this.methodCode = methodCode;
 		this.permissionCode = permissionCode;
 	}
@@ -29,6 +34,14 @@ public class PermissionLocator {
 
 	public void setMethod(Method method) {
 		this.method = method;
+	}
+
+	public int getMenuSuffix() {
+		return menuSuffix;
+	}
+
+	public void setMenuSuffix(int menuSuffix) {
+		this.menuSuffix = menuSuffix;
 	}
 
 	public String getMethodCode() {

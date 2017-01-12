@@ -59,18 +59,18 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 				throw new PermissionException('[' + element.toString() + "]权限码参数配置有误");
 			}
 		} else {
-			locator = new PermissionLocator(method, methodCodeBuilder(clazz, method).toString(), code);
+			locator = new PermissionLocator(method, 0, methodCodeBuilder(clazz, method).toString(), code);
 		}
 		return locator;
 	}
 
 	protected PermissionLocator handleMenusBasedClass(final Class<?> clazz, final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
 		final String permissionCode = clazz.getName().substring(baseIndex);
-		return new PermissionLocator(method, permissionCode, permissionCode);
+		return new PermissionLocator(method, 0, permissionCode, permissionCode);
 	}
 
 	protected PermissionLocator handleMenusBasedMethod(final Class<?> clazz, final Method method, final ActionInvocation invocation, final Permission p, final Menu[] menus) {
-		final PermissionLocator locator = new PermissionLocator(method, null, null);
+		final PermissionLocator locator = new PermissionLocator(method, 0, null, null);
 		if (menus.length == 0) {
 			locator.methodCode = locator.permissionCode = methodCodeBuilder(clazz, method).toString();
 		} else if (menus.length > 1) {
@@ -79,22 +79,27 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 			// 后缀为 0 时，不追加后缀
 			final HttpServletRequest request = (HttpServletRequest) invocation.getInvocationContext().get(StrutsStatics.HTTP_REQUEST);
 			int menuIndex = -1;
-			final int[] suffixRef = { -1 }; // 后缀值（由于方法封装的缘故，为了便于该值的引用修改，因此以数组形式表示）
+			locator.menuSuffix = -1; // 后缀值（由于方法封装的缘故，为了便于该值的引用修改，因此以数组形式表示）
 			for (int i = 0; i < menus.length; i++) {
-				if (matchMethodMenu(request, menus[i], suffixRef)) {
+				if (menus[i].suffix() > Menu.DEFAULT_SUFFIX) {
+					locator.menuSuffix = menus[i].suffix();
+				} else {
+					locator.menuSuffix++;
+				}
+				if (matchMethodMenu(request, menus[i], locator)) {
 					menuIndex = i;
 					break;
 				}
 			}
 			if (menuIndex != -1) {
 				setTitle(request, menus[menuIndex]);
-				if (suffixRef[0] > 0) {
-					locator.methodCode = methodCodeBuilder(clazz, method).append('-').append(suffixRef[0]).toString();
+				if (locator.menuSuffix > 0) {
+					locator.methodCode = methodCodeBuilder(clazz, method).append('-').append(locator.menuSuffix).toString();
 				}
 				locator.permissionCode = buildMethodPermissionCode(
 						methodPermissionBuilder(clazz, method, invocation, p, menus),
 						menus[menuIndex],
-						suffixRef[0]);
+						locator.menuSuffix);
 			}
 		}
 		if (locator.methodCode == null) {
@@ -103,12 +108,7 @@ public class DefaultPermissionPolicy implements PermissionPolicy {
 		return locator;
 	}
 
-	protected boolean matchMethodMenu(final HttpServletRequest request, final Menu menu, final int[] suffixRef) {
-		if (menu.suffix() > Menu.DEFAULT_SUFFIX) {
-			suffixRef[0] = menu.suffix();
-		} else {
-			suffixRef[0]++;
-		}
+	protected boolean matchMethodMenu(final HttpServletRequest request, final Menu menu, final PermissionLocator locator) {
 		final String[] args = menu.args(); // 菜单所需校验的额外请求参数的键值对数组
 		if (args.length > 0) {
 			if ((args.length & 1) != 0) { // 数组长度必须为偶数

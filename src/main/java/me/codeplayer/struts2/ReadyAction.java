@@ -1,23 +1,28 @@
 package me.codeplayer.struts2;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.StrutsStatics;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
-import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionContext;
+
+import me.codeplayer.annotation.Ready;
 
 /**
- * 自定义的ActionSupport类，其它Action均可继承此类以实现某些功能
+ * 自定义的Action类，其它Action均可继承此类以实现某些通用功能
  * 
  * @author Ready
  * @date 2014-10-23
  */
-@SuppressWarnings("serial")
-public class ReadyActionSupport extends ActionSupport implements ServletRequestAware {
+public class ReadyAction implements Action, ServletRequestAware {
 
-	private final ReadyAction proxy = new ReadyAction();
 	/**
 	 * HttpServletRequest对象，已经过Struts注入，可直接使用
 	 */
@@ -29,7 +34,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @param title 标题
 	 */
 	protected void setTitle(String title) {
-		proxy.setTitle(title);
+		request.setAttribute(Ready.TITLE_KEY, title);
 	}
 
 	/**
@@ -40,7 +45,11 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @throws NumberFormatException 如果参数为空或无效
 	 */
 	protected int getInt(final String name) throws NumberFormatException {
-		return proxy.getInt(name);
+		final String val = request.getParameter(name);
+		if (StringUtils.isEmpty(val)) {
+			throw new NumberFormatException();
+		}
+		return Integer.parseInt(val);
 	}
 
 	/**
@@ -51,7 +60,15 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @return
 	 */
 	protected int getInt(final String name, final int defaultValue) {
-		return proxy.getInt(name, defaultValue);
+		final String val = request.getParameter(name);
+		if (StringUtils.isEmpty(val)) {
+			return defaultValue;
+		}
+		try {
+			return Integer.parseInt(val);
+		} catch (Exception e) {
+			return defaultValue;
+		}
 	}
 
 	/**
@@ -62,30 +79,44 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @return
 	 */
 	protected Integer getInteger(String name, Integer defaultValue) {
-		return proxy.getInteger(name, defaultValue);
+		final String val = request.getParameter(name);
+		if (StringUtils.isEmpty(val)) {
+			return defaultValue;
+		}
+		try {
+			return Integer.parseInt(val);
+		} catch (Exception e) {
+			return defaultValue;
+		}
 	}
 
 	/**
 	 * 快速进行文件下载
 	 * 
-	 * @param inputStream 指定用于下载的文件输入流
+	 * @param inputStream 指定的用于下载的文件输入流
 	 * @param downloadFileName 指定响应到客户浏览器的下载文件名称
 	 * @return result name
 	 */
 	protected String _download(InputStream inputStream, String downloadFileName) {
-		return proxy._download(inputStream, downloadFileName);
+		request.setAttribute("__is", inputStream);
+		request.setAttribute("__file", new String(downloadFileName.getBytes(Charset.forName("UTF-8")), Charset.forName("ISO-8859-1")));
+		return "global_download";
 	}
 
 	/**
 	 * 快速进行文件下载
 	 * 
-	 * @param file 用于下载的文件
+	 * @param inputStream 指定的用于下载的文件输入流
 	 * @param downloadFileName 指定响应到客户浏览器的下载文件名称
 	 * @return result name
 	 * @throws IllegalArgumentException see {@link FileNotFoundException}
 	 */
 	protected String _download(File file, String downloadFileName) throws IllegalArgumentException {
-		return proxy._download(file, downloadFileName);
+		try {
+			return _download(new FileInputStream(file), downloadFileName);
+		} catch (FileNotFoundException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	/**
@@ -94,10 +125,10 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @param filepath 文件所在路径
 	 * @param downloadFileName 指定响应到客户浏览器的下载文件名称
 	 * @return result name
-	 * @throws IllegalArgumentException {@link FileNotFoundException}
+	 * @throws IllegalArgumentException see {@link FileNotFoundException}
 	 */
 	protected String _download(String filepath, String downloadFileName) throws IllegalArgumentException {
-		return proxy._download(filepath, downloadFileName);
+		return _download(new File(filepath), downloadFileName);
 	}
 
 	/**
@@ -107,7 +138,8 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @return result name
 	 */
 	protected String _redirectAction(String actionName) {
-		return proxy._redirectAction(actionName);
+		request.setAttribute("__action", actionName);
+		return "global_redirect_action";
 	}
 
 	/**
@@ -118,17 +150,18 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @return result name
 	 */
 	protected String _redirect(String url, boolean permanent) {
-		return proxy._redirect(url, permanent);
+		request.setAttribute("__url", url);
+		return permanent ? "global_predirect" : "global_redirect";
 	}
 
 	/**
 	 * 临时重定向到指定的URL
 	 * 
 	 * @param url 指定的URL
-	 * @return result name
+	 * @return
 	 */
 	protected String _redirect(String url) {
-		return proxy._redirect(url, false);
+		return _redirect(url, false);
 	}
 
 	/**
@@ -138,7 +171,15 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @param encoding 指定的字符集编码。如果为null，则默认为"UTF-8"
 	 */
 	protected void writeToResponse(String text, String encoding) {
-		proxy.writeToResponse(text, encoding);
+		final ActionContext context = ActionContext.getContext();
+		final HttpServletResponse response = (HttpServletResponse) context.get(StrutsStatics.HTTP_RESPONSE);
+		response.setContentType(encoding == null ? "text/html;charset=UTF-8" : "text/html;charset=" + encoding);
+		try {
+			response.getWriter().write(text);
+			context.getActionInvocation().getProxy().setExecuteResult(false);
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	/**
@@ -147,11 +188,14 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @param text 需要写入的文本内容
 	 */
 	protected void writeToResponse(String text) {
-		proxy.writeToResponse(text, null);
+		writeToResponse(text, null);
 	}
 
 	public void setServletRequest(HttpServletRequest request) {
 		this.request = request;
-		proxy.setServletRequest(request);
+	}
+
+	public String execute() throws Exception {
+		return SUCCESS;
 	}
 }

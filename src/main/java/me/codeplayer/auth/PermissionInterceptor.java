@@ -17,8 +17,6 @@ import me.codeplayer.struts2.ReadyInterceptor;
 public class PermissionInterceptor extends AbstractInterceptor {
 
 	private static final long serialVersionUID = 1L;
-	/** 权限定位符数组在request中的KEY值 */
-	public static final String PERMISSION_LOCATOR_KEY = "permissionLocator";
 	//
 	/** 存储用户信息的session key */
 	protected String sessionUserKey; // 存储用户信息的session key
@@ -56,7 +54,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
 				(role == null || !role.hasPermission(locator.permissionCode))) {
 			throw new PermissionException("你没有权限进行此操作!");
 		}
-		context.put(PERMISSION_LOCATOR_KEY, locator);
+		context.put(PermissionLocator.PERMISSION_LOCATOR_KEY, locator);
 		return invocation.invoke();
 	}
 
