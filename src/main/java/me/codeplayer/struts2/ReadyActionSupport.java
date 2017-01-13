@@ -17,7 +17,7 @@ import com.opensymphony.xwork2.ActionSupport;
 @SuppressWarnings("serial")
 public class ReadyActionSupport extends ActionSupport implements ServletRequestAware {
 
-	private final ReadyAction proxy = new ReadyAction();
+	private final ReadyAction delegate = new ReadyAction();
 	/**
 	 * HttpServletRequest对象，已经过Struts注入，可直接使用
 	 */
@@ -29,7 +29,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @param title 标题
 	 */
 	protected void setTitle(String title) {
-		proxy.setTitle(title);
+		delegate.setTitle(title);
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @throws NumberFormatException 如果参数为空或无效
 	 */
 	protected int getInt(final String name) throws NumberFormatException {
-		return proxy.getInt(name);
+		return delegate.getInt(name);
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @return
 	 */
 	protected int getInt(final String name, final int defaultValue) {
-		return proxy.getInt(name, defaultValue);
+		return delegate.getInt(name, defaultValue);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @return
 	 */
 	protected Integer getInteger(String name, Integer defaultValue) {
-		return proxy.getInteger(name, defaultValue);
+		return delegate.getInteger(name, defaultValue);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @return result name
 	 */
 	protected String _download(InputStream inputStream, String downloadFileName) {
-		return proxy._download(inputStream, downloadFileName);
+		return delegate._download(inputStream, downloadFileName);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @throws IllegalArgumentException see {@link FileNotFoundException}
 	 */
 	protected String _download(File file, String downloadFileName) throws IllegalArgumentException {
-		return proxy._download(file, downloadFileName);
+		return delegate._download(file, downloadFileName);
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @throws IllegalArgumentException {@link FileNotFoundException}
 	 */
 	protected String _download(String filepath, String downloadFileName) throws IllegalArgumentException {
-		return proxy._download(filepath, downloadFileName);
+		return delegate._download(filepath, downloadFileName);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @return result name
 	 */
 	protected String _redirectAction(String actionName) {
-		return proxy._redirectAction(actionName);
+		return delegate._redirectAction(actionName);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @return result name
 	 */
 	protected String _redirect(String url, boolean permanent) {
-		return proxy._redirect(url, permanent);
+		return delegate._redirect(url, permanent);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @return result name
 	 */
 	protected String _redirect(String url) {
-		return proxy._redirect(url, false);
+		return delegate._redirect(url, false);
 	}
 
 	/**
@@ -138,7 +138,7 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @param encoding 指定的字符集编码。如果为null，则默认为"UTF-8"
 	 */
 	protected void writeToResponse(String text, String encoding) {
-		proxy.writeToResponse(text, encoding);
+		delegate.writeToResponse(text, encoding);
 	}
 
 	/**
@@ -147,11 +147,11 @@ public class ReadyActionSupport extends ActionSupport implements ServletRequestA
 	 * @param text 需要写入的文本内容
 	 */
 	protected void writeToResponse(String text) {
-		proxy.writeToResponse(text, null);
+		delegate.writeToResponse(text, null);
 	}
 
 	public void setServletRequest(HttpServletRequest request) {
 		this.request = request;
-		proxy.setServletRequest(request);
+		delegate.setServletRequest(request);
 	}
 }
