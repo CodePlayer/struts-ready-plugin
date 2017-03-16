@@ -138,7 +138,7 @@ public class ReadyAction implements Action, ServletRequestAware {
 	 * @return result name
 	 */
 	protected String _redirectAction(String actionName) {
-		request.setAttribute("__action", actionName);
+		ActionContext.getContext().put("__action", actionName);
 		return "global_redirect_action";
 	}
 
@@ -150,7 +150,7 @@ public class ReadyAction implements Action, ServletRequestAware {
 	 * @return result name
 	 */
 	protected String _redirect(String url, boolean permanent) {
-		request.setAttribute("__url", url);
+		ActionContext.getContext().put("__url", url);
 		return permanent ? "global_predirect" : "global_redirect";
 	}
 
