@@ -3,7 +3,7 @@
 
 	<groupId>me.codeplayer</groupId>
 	<artifactId>struts-ready-plugin</artifactId>
-	<version>0.3.3-SNAPSHOT</version>
+	<version>1.0.0-RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>struts-ready-plugin</name>
