@@ -1,7 +1,6 @@
 package me.codeplayer.struts2;
 
 import java.io.*;
-import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -99,7 +98,11 @@ public class ReadyAction implements Action, ServletRequestAware {
 	 */
 	protected String _download(InputStream inputStream, String downloadFileName) {
 		request.setAttribute("__is", inputStream);
-		request.setAttribute("__file", new String(downloadFileName.getBytes(Charset.forName("UTF-8")), Charset.forName("ISO-8859-1")));
+		try {
+			request.setAttribute("__file", new String(downloadFileName.getBytes("UTF-8"), "ISO-8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalArgumentException(e);
+		}
 		return "global_download";
 	}
 
