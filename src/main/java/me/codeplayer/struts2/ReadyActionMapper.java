@@ -1,19 +1,16 @@
 package me.codeplayer.struts2;
 
-import java.util.Collection;
+import java.util.*;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.*;
 
-import org.apache.struts2.RequestUtils;
-import org.apache.struts2.dispatcher.mapper.ActionMapping;
-import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
+import org.apache.logging.log4j.*;
+import org.apache.struts2.*;
+import org.apache.struts2.dispatcher.mapper.*;
 
-import com.opensymphony.xwork2.config.Configuration;
-import com.opensymphony.xwork2.config.ConfigurationManager;
-import com.opensymphony.xwork2.config.entities.PackageConfig;
-import com.opensymphony.xwork2.inject.Inject;
-import com.opensymphony.xwork2.util.logging.Logger;
-import com.opensymphony.xwork2.util.logging.LoggerFactory;
+import com.opensymphony.xwork2.config.*;
+import com.opensymphony.xwork2.config.entities.*;
+import com.opensymphony.xwork2.inject.*;
 
 /**
  * 自定义的ActionMapper接口实现类
@@ -23,7 +20,7 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
  */
 public class ReadyActionMapper extends DefaultActionMapper {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ReadyActionMapper.class);
+	private static final Logger LOG = LogManager.getLogger(ReadyActionMapper.class);
 	/** 是否启用struts-ready-plugin插件 */
 	protected boolean readyEnabled;
 	/** 默认的action名称 */
@@ -37,19 +34,19 @@ public class ReadyActionMapper extends DefaultActionMapper {
 	public void setReadyEnabled(String enabled) {
 		this.readyEnabled = "true".equalsIgnoreCase(enabled);
 		if (this.readyEnabled) {
-			LOG.debug("已启用struts-ready-plugin");
+			LOG.debug("已启用 struts-ready-plugin");
 		}
 	}
 
 	@Inject("struts.ready.default.action")
 	public void setDefaultAction(String defaultAction) {
-		LOG.debug("默认的action为[#0]", defaultAction);
+		LOG.debug("默认的 action 为 {}", defaultAction);
 		this.defaultAction = defaultAction;
 	}
 
 	@Inject("struts.ready.default.method")
 	public void setDefaultMethod(String defaultMethod) {
-		LOG.debug("默认的method为[#0]", defaultMethod);
+		LOG.debug("默认的 method 为 {}", defaultMethod);
 		this.defaultMethod = defaultMethod;
 	}
 
@@ -88,7 +85,7 @@ public class ReadyActionMapper extends DefaultActionMapper {
 	/**
 	 * 从URI中解析action的名称、命名空间以及方法名称
 	 * 
-	 * @param uri 指定的URI
+	 * @param uri     指定的URI
 	 * @param mapping 用于组装的ActionMapping
 	 */
 	protected void parseNameAndNamespaceAndMethod(String uri, ActionMapping mapping, ConfigurationManager configManager) {
@@ -176,7 +173,7 @@ public class ReadyActionMapper extends DefaultActionMapper {
 	/**
 	 * 根据指定的命名空间来获取包配置信息
 	 * 
-	 * @param packages 指定包配置集合
+	 * @param packages  指定包配置集合
 	 * @param namespace 指定的命名空间
 	 * @return
 	 */

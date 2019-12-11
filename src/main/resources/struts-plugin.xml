@@ -2,20 +2,22 @@
 <!-- 
  /** struts-ready-plugin Configurations 
    * Author: Ready 
-   * Author Blog: http://www.365mini.com
+   * Author Blog: https://codeplayer.vip
    * Plugin Site: https://github.com/CodePlayer/struts-ready-plugin
    * Mail: CodePlayer360@gmail.com
    */
  -->
 
 <!DOCTYPE struts PUBLIC
-	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
-	"http://struts.apache.org/dtds/struts-2.3.dtd">
+	"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts order="30">
 
 	<!-- 权限拦截相关策略配置类 -->
 	<bean type="me.codeplayer.auth.PermissionPolicy" name="ready" class="me.codeplayer.auth.DefaultPermissionPolicy" />
+	
+	<bean type="com.opensymphony.xwork2.ActionProxyFactory" name="ready" class="me.codeplayer.struts2.ReadyStrutsActionProxyFactory"/>
 	
 	<!-- 即使没有@Action注解也允许创建action映射 -->
 	<constant name="struts.convention.action.mapAllMatches" value="true" />
@@ -46,6 +48,9 @@
 	
 	<!-- 是否启用默认的action和method -->
 	<constant name="struts.ready.enable.default" value="true" />
+
+	<!-- 启用自定义的 ActionProxyFactory -->
+	<constant name="struts.actionProxyFactory" value="ready" />
 	
 	<package name="ready-default" abstract="true" extends="struts-default">
 		<interceptors>

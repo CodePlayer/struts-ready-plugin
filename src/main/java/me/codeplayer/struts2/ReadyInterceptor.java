@@ -1,29 +1,27 @@
 package me.codeplayer.struts2;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
-import org.apache.struts2.StrutsStatics;
+import org.apache.logging.log4j.*;
+import org.apache.struts2.*;
 
 import com.opensymphony.xwork2.*;
-import com.opensymphony.xwork2.config.entities.ActionConfig;
-import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
-import com.opensymphony.xwork2.util.logging.Logger;
-import com.opensymphony.xwork2.util.logging.LoggerFactory;
+import com.opensymphony.xwork2.config.entities.*;
+import com.opensymphony.xwork2.interceptor.*;
 
-import me.codeplayer.annotation.Ready;
+import me.codeplayer.annotation.*;
 
 /**
- * struts-ready-plugin的核心拦截器，action的对应方法必须具有@Ready注解
+ * struts-ready-plugin 的核心拦截器，action 的对应方法必须具有 @Ready 注解
  * 
  * @author Ready
  * @date 2014-10-25
  */
 public class ReadyInterceptor extends AbstractInterceptor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ReadyInterceptor.class);
+	private static final Logger LOG = LogManager.getLogger(ReadyInterceptor.class);
 	private static final long serialVersionUID = 1L;
 
 	public String intercept(ActionInvocation invocation) throws Exception {
