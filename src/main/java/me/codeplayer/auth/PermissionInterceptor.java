@@ -66,8 +66,6 @@ public class PermissionInterceptor extends AbstractInterceptor {
 	 * @return
 	 */
 	protected boolean checkPermission(UserPermission role, String code) {
-		if (role == null)
-			return false;
-		return role.hasPermission(code);
+		return role != null && role.hasPermission(code);
 	}
 }
